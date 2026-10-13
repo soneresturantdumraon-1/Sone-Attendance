@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sone Staff">
+<meta name="theme-color" content="#007aff">
+<title>Sone Staff</title>
+<link rel="manifest" href="manifest-staff.json">
+<link rel="icon" href="staff-192.png">
+<link rel="apple-touch-icon" href="staff-192.png">
+<style>
+:root{--bg:#f2f2f7;--card:#fff;--tx:#000;--tx2:#8e8e93;--sep:rgba(60,60,67,.2);--blue:#007aff;--green:#34c759;--orange:#ff9500;--red:#ff3b30;--fill:rgba(120,120,128,.12);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--tx:#fff;--tx2:#98989f;--sep:rgba(84,84,88,.65);--blue:#0a84ff;--green:#30d158;--orange:#ff9f0a;--red:#ff453a;--fill:rgba(120,120,128,.24)}}
+:root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--tx:#fff;--tx2:#98989f;--sep:rgba(84,84,88,.65);--blue:#0a84ff;--green:#30d158;--orange:#ff9f0a;--red:#ff453a;--fill:rgba(120,120,128,.24)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:17px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100%}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+button:disabled{opacity:.4}
+.wrap{max-width:560px;margin:0 auto;padding:14px 14px 40px}
+.mu{color:var(--tx2)}.g{color:var(--green)}.o{color:var(--orange)}.r{color:var(--red)}.sub{font-size:13px;color:var(--tx2)}
+.card{background:var(--card);border-radius:14px;padding:14px;margin:0 0 12px}
+.list{background:var(--card);border-radius:14px;overflow:hidden;margin:0 0 12px}
+.frow{display:flex;align-items:center;gap:10px;padding:0 14px;min-height:46px;border-bottom:.5px solid var(--sep)}
+.frow:last-child{border-bottom:0}
+.frow label{min-width:100px}
+.frow input{flex:1;min-width:0;border:0;background:transparent;color:var(--tx);font:inherit;padding:12px 0;outline:none;text-align:right}
+.btn{height:46px;border-radius:12px;padding:0 16px;display:flex;align-items:center;justify-content:center;font-weight:600;width:100%}
+.btn.pri{background:var(--blue);color:#fff}
+.btn.tint{background:color-mix(in srgb,var(--blue) 15%,transparent);color:var(--blue)}
+.btn.red{background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red)}
+.who{display:flex;align-items:center;gap:12px}
+.grow{flex:1;min-width:0}
+.nm{font-weight:700;font-size:20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.av{border-radius:50%;object-fit:cover;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+.ic{width:38px;height:38px;border-radius:50%;background:var(--fill);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.seg{display:flex;background:var(--fill);border-radius:9px;padding:2px;margin:12px 0 0}
+.seg button{flex:1;height:32px;border-radius:7px;font-size:14px;font-weight:600;color:var(--tx2)}
+.seg button.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.mbar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:14px;padding:6px;margin:0 0 12px}
+.mbar button{width:44px;height:40px;font-size:22px;color:var(--blue)}
+.mbar span{font-weight:600}
+.tiles{display:flex;gap:8px;margin:0 0 12px}
+.tiles div{flex:1;background:var(--card);border-radius:14px;padding:10px 4px;text-align:center}
+.tiles b{display:block;font-size:24px}
+.tiles span{font-size:12px;color:var(--tx2)}
+.big{text-align:center;padding:6px 0 10px}
+.big b{display:block;font-size:34px;line-height:1.1}
+.irow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:.5px solid var(--sep)}
+.irow:last-child{border-bottom:0}
+.irow span{flex:1;min-width:0}
+.irow b{font-weight:600;white-space:nowrap}
+.sec{font-weight:700;margin:6px 0 8px}
+.tag{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.tag.P{color:var(--green);background:color-mix(in srgb,var(--green) 16%,transparent)}
+.tag.H{color:var(--orange);background:color-mix(in srgb,var(--orange) 16%,transparent)}
+.tag.L{color:var(--blue);background:color-mix(in srgb,var(--blue) 16%,transparent)}
+.tag.A{color:var(--tx2);background:var(--fill)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal i{font-style:normal;font-size:11px;text-align:center;color:var(--tx2)}
+.cal div{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:var(--fill);color:var(--tx2)}
+.cal .P{background:var(--green);color:#fff}.cal .H{background:var(--orange);color:#fff}.cal .L{background:var(--blue);color:#fff}.cal .A{background:color-mix(in srgb,var(--red) 18%,transparent);color:var(--red)}.cal .f{opacity:.35}.cal .t{outline:2px solid var(--tx);outline-offset:1px}
+.leg{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:12px;color:var(--tx2)}
+.leg b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.banner{border-radius:10px;padding:10px 12px;font-size:14px;margin-top:8px;background:var(--fill)}
+.banner.g{background:color-mix(in srgb,var(--green) 14%,transparent)}.banner.r{background:color-mix(in srgb,var(--red) 14%,transparent)}
+.err{color:var(--red);font-size:14px;margin:8px 4px;min-height:18px}
+.top{display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px}
+.pill{background:var(--fill);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="config.js"></script>
+<script>
+/* ===== mobile-number access: request -> owner approves (config.js needed) ===== */
+const SBC=(window.SB&&/^https?:\/\/[^X]/.test(window.SB.url||'')&&/^eyJ/.test(window.SB.key||''))?window.SB:null;
+const ROLE_='staff';
+const PL={en:{mobile:'Mobile number',device:'Phone name',send:'Request access',badNum:'Enter a valid 10 digit mobile number.',nf:'This number is not registered. Ask the owner to add your number in the Staff page.',showCode:'Show this code to the owner',waiting:'Waiting for owner approval...',cancel:'Cancel',hS:'Enter your mobile number. The owner will approve you.',hK:'Name this phone, for example Door phone. The owner will approve it.',rej:'The owner rejected this request.'},
+hi:{mobile:'मोबाइल नंबर',device:'फ़ोन का नाम',send:'एक्सेस मांगें',badNum:'सही 10 अंकों का मोबाइल नंबर भरें।',nf:'यह नंबर दर्ज नहीं है। मालिक से स्टाफ पेज में अपना नंबर जुड़वाएँ।',showCode:'यह कोड मालिक को दिखाएँ',waiting:'मालिक की मंज़ूरी का इंतज़ार...',cancel:'रद्द करें',hS:'अपना मोबाइल नंबर भरें। मालिक आपको मंज़ूरी देंगे।',hK:'इस फ़ोन का नाम लिखें, जैसे Door phone। मालिक मंज़ूरी देंगे।',rej:'मालिक ने यह अनुरोध अस्वीकार किया।'}};
+const pt=k=>(PL[lang]||PL.en)[k];
+let polling=null;
+function phonePart(){
+  const q=cfg.req,st=ROLE_==='staff';
+  if(q)return `<div class="card" style="text-align:center"><div class="sub">${pt('showCode')}</div><div style="font-size:46px;font-weight:800;letter-spacing:8px;margin:6px 0">${esc(q.vcode)}</div><div class="sub">${q.name?esc(q.name)+' · ':''}${pt('waiting')}</div></div><button class="btn tint" style="width:100%" onclick="reqCancel()">${pt('cancel')}</button>`;
+  return `<div class="list"><div class="frow"><label>${st?pt('mobile'):pt('device')}</label><input id="phn" ${st?'inputmode="numeric" maxlength="15" placeholder="98XXXXXXXX"':'placeholder="Door phone"'} autocomplete="off"></div></div><button class="btn pri" id="pgo" style="width:100%" onclick="reqSend()">${pt('send')}</button><div id="pmsg" style="color:var(--red);font-size:14px;margin:8px 4px;min-height:18px">${window._rm||''}</div><div class="sub" style="padding:0 4px">${st?pt('hS'):pt('hK')}</div>`;
+}
+async function reqSend(){
+  const v=$('#phn').value.trim(),m=$('#pmsg'),b=$('#pgo'),st=ROLE_==='staff';
+  if(!v||(st&&v.replace(/\D/g,'').length<10)){m.textContent=pt('badNum');return}
+  b.disabled=true;m.textContent='';window._rm='';
+  try{
+    cfg.url=SBC.url.replace(/\/+$/,'');cfg.key=SBC.key;
+    if(!cfg.session)await authCall('signup',{data:{}});
+    const r=await api('/rest/v1/rpc/request_access',{method:'POST',body:JSON.stringify({p_role:ROLE_,p_phone:st?v:null,p_label:st?null:v})});
+    cfg.req={vcode:r.vcode,name:r.name||''};cfg.role=null;saveCfg();render();reqPoll();
+  }catch(e){m.textContent=/NUMBER_NOT_FOUND/.test(e.message)?pt('nf'):e.message;b.disabled=false}
+}
+function reqCancel(){clearInterval(polling);cfg.req=null;saveCfg();render()}
+function reqPoll(){
+  clearInterval(polling);
+  const tick=async()=>{
+    if(!cfg.req||!cfg.session)return;
+    try{
+      const a=await api('/rest/v1/rpc/my_access',{method:'POST',body:'{}'});
+      if(a.status==='approved'&&a.role===ROLE_){
+        clearInterval(polling);cfg.role=a.role;cfg.sid=a.sid||null;cfg.name=a.name||null;cfg.req=null;saveCfg();
+        if(ROLE_==='staff'){D={staff:null,att:[],pay:[],out:[],at:''};render();pull()}
+        else{S={faces:{},att:{},outs:{},since:'',queue:[]};persist();render();syncAll()}
+      }else if(a.status==='rejected'||a.status==='none'||a.status==='approved'){
+        clearInterval(polling);cfg.req=null;saveCfg();window._rm=a.status==='rejected'?pt('rej'):'';render();
+      }
+    }catch(e){}
+  };
+  polling=setInterval(tick,4000);tick();
+}
+addEventListener('load',function(){if(SBC&&cfg.req&&cfg.session&&cfg.role!==ROLE_)reqPoll()});
+</script>
+<script>
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const BIZ={name:'SONE RESTAURANT',place:'Dumraon, Bihar'};
+let lang=LS.get('staff_lang','en'),cfg=LS.get('staff_cfg',{}),D=LS.get('staff_data',{staff:null,att:[],pay:[],out:[],at:''});
+let month=null,busy=false,netOk=null,last=D.at||'';
+const I={en:{
+title:'Staff App',setupSub:'See your own attendance, salary and balance',url:'Project URL',key:'Public key',code:'Access code',connect:'Connect',fill:'Enter the URL, key and code.',
+anonOff:'Anonymous sign-in is off. In Supabase open Authentication > Sign In / Providers and turn on "Allow anonymous sign-ins".',wrongCode:'This code is not for the Staff app.',askOwner:'Ask the owner for your link: Staff page > Staff App Access.',
+today:'Today',present:'Present',half:'Half Day',leave:'Leave',absent:'Absent',notMarked:'Not marked yet',days:'Days',
+salary:'Monthly Salary',bonus:'No-leave bonus',prorated:'Pro-rated from {d}',ded:'Deduction ({n} absent days)',prev:'Previous pending',prevAdv:'Previous advance',withdrawn:'Withdrawn this month',
+remaining:'Remaining',overdrawn:'Overdrawn (advance)',dueOn:'Salary due on',held:'Salary not payable yet. Due on {d}.',onTrack:'On track for a {a} bonus',
+attendance:'Attendance',lPresent:'Present',lHalf:'Half',lLeave:'Leave',lAbsent:'Absent',money:'Money taken',noTx:'No withdrawals this month',wd:'Withdrawal',paid:'Salary paid',
+outs:'Out / In',noOut:'No outings this month',outNow:'Out now',since:'since {t}',updated:'Updated {t}',offline:'Offline, showing saved data',refresh:'Refresh',
+loading:'Loading...',noAccess:'No data found. Your access may have been removed. Ask the owner for a new link.',disconnect:'Disconnect this phone',sure:'Disconnect this phone from the Staff app?',hrS:'h',minS:'m'},
+hi:{
+title:'स्टाफ ऐप',setupSub:'अपनी हाज़िरी, वेतन और हिसाब देखें',url:'प्रोजेक्ट URL',key:'पब्लिक की',code:'एक्सेस कोड',connect:'कनेक्ट करें',fill:'URL, की और कोड भरें।',
+anonOff:'Anonymous sign-in बंद है। Supabase में Authentication > Sign In / Providers में "Allow anonymous sign-ins" चालू करें।',wrongCode:'यह कोड स्टाफ ऐप का नहीं है।',askOwner:'मालिक से अपना लिंक मांगें: स्टाफ पेज > Staff App Access।',
+today:'आज',present:'उपस्थित',half:'आधा दिन',leave:'छुट्टी',absent:'अनुपस्थित',notMarked:'अभी दर्ज नहीं',days:'दिन',
+salary:'मासिक वेतन',bonus:'बिना छुट्टी बोनस',prorated:'{d} से अनुपातिक',ded:'कटौती ({n} दिन अनुपस्थित)',prev:'पिछला बकाया',prevAdv:'पिछला अग्रिम',withdrawn:'इस माह लिया',
+remaining:'शेष',overdrawn:'अधिक लिया (अग्रिम)',dueOn:'वेतन देय',held:'वेतन अभी देय नहीं। देय तिथि {d}।',onTrack:'{a} बोनस की राह पर',
+attendance:'हाज़िरी',lPresent:'उपस्थित',lHalf:'आधा',lLeave:'छुट्टी',lAbsent:'अनुपस्थित',money:'लिया गया पैसा',noTx:'इस माह कोई निकासी नहीं',wd:'निकासी',paid:'वेतन दिया',
+outs:'बाहर / वापस',noOut:'इस माह कोई बाहर जाना नहीं',outNow:'अभी बाहर',since:'{t} से',updated:'अपडेट {t}',offline:'ऑफलाइन, सेव किया डेटा दिख रहा है',refresh:'रिफ्रेश',
+loading:'लोड हो रहा है...',noAccess:'कोई डेटा नहीं मिला। हो सकता है आपका एक्सेस हटा दिया गया हो। मालिक से नया लिंक मांगें।',disconnect:'इस फ़ोन को डिसकनेक्ट करें',sure:'इस फ़ोन को स्टाफ ऐप से डिसकनेक्ट करें?',hrS:'घं',minS:'मि'}};
+const t=(k,o)=>{let v=(I[lang]&&I[lang][k])||I.en[k]||k;if(o)for(const x in o)v=v.split('{'+x+'}').join(o[x]);return v};
+const WS_={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],hi:['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि']};
+const MS_={en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],hi:['जन','फ़र','मार्च','अप्रै','मई','जून','जुल','अग','सित','अक्टू','नव','दिस']};
+const MF_={en:['January','February','March','April','May','June','July','August','September','October','November','December'],hi:['जनवरी','फ़रवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर']};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rs=n=>'₹'+(Math.round(n*100)/100).toLocaleString('en-IN');
+const pad=n=>String(n).padStart(2,'0');
+const dstr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=()=>dstr(new Date());
+const parse=s=>{const [y,m,d]=s.split('-').map(Number);return{y,m,d,wd:new Date(y,m-1,d).getDay()}};
+const fmtD=s=>{const p=parse(s);return p.d+' '+MS_[lang][p.m-1]+' '+p.y};
+const mlabel=m=>{const [y,mo]=m.split('-');return MF_[lang][+mo-1]+' '+y};
+const fmtT=s=>{if(!s)return '';const [h,m]=s.split(':').map(Number);return (h%12||12)+':'+pad(m)+' '+(h<12?'AM':'PM')};
+const daysIn=m=>{const [y,mo]=m.split('-').map(Number);return new Date(y,mo,0).getDate()};
+function dayList(a,b){const o=[];let [y,m,d]=a.split('-').map(Number);for(let i=0;i<400;i++){const x=dstr(new Date(y,m-1,d+i));if(x>b)break;o.push(x)}return o}
+const shiftM=(m,n)=>{const [y,mo]=m.split('-').map(Number);const d=new Date(y,mo-1+n,1);return d.getFullYear()+'-'+pad(d.getMonth()+1)};
+const idDate=id=>{const n=parseInt(String(id).slice(0,8),36);return n>1e12&&n<4e12?dstr(new Date(n)):null};
+const trackStart=s=>{const j=(s.joined||'').slice(0,7),a=(s.added||idDate(s.id)||s.joined||today()).slice(0,7);return j>a?j:a};
+const sumP=(arr,k)=>arr.filter(p=>p.kind===k).reduce((x,p)=>x+p.amt,0);
+const addMonth1=d=>{const p=parse(d);return dstr(new Date(p.y,p.m,p.d))};
+const dueDate=s=>addMonth1(s.joined||today());
+const isHeld=s=>!!s.hold&&today()<dueDate(s);
+const durMin=(a,b)=>{if(!a||!b)return 0;const f=x=>{const [h,m]=x.split(':').map(Number);return h*60+m};let d=f(b)-f(a);if(d<0)d+=1440;return d};
+const fmtDur=n=>{const a=Math.floor(n/60),b=n%60;return (a?a+t('hrS')+' ':'')+b+t('minS')};
+const COLORS=['#007aff','#34c759','#ff9500','#af52de','#ff2d55','#5ac8fa','#5856d6','#ff6b35'];
+function av(s,sz){
+  if(s.photo)return `<img class="av" style="width:${sz}px;height:${sz}px" src="${esc(s.photo)}" alt="">`;
+  let h=0;for(const ch of (s.name||'?'))h=(h*31+ch.charCodeAt(0))>>>0;
+  return `<div class="av" style="width:${sz}px;height:${sz}px;background:${COLORS[h%COLORS.length]}">${esc((s.name||'?').trim()[0]?.toUpperCase()||'?')}</div>`;
+}
+/* ---------- salary maths (same as the owner app) ---------- */
+function monthNet(s,m){
+  const dim=daysIn(m),first=m+'-01',last=m+'-'+pad(dim);
+  const at=D.att.filter(a=>a.date.startsWith(m));
+  const present=at.reduce((x,a)=>x+(a.type==='P'?1:a.type==='H'?.5:0),0),leave=at.filter(a=>a.type==='L').length;
+  const pays=D.pay.filter(p=>(p.fm||p.date.slice(0,7))===m);
+  const taken=sumP(pays,'take'),settled=sumP(pays,'settle');
+  let ded=0,absent=0;
+  if(s.cut){const st=s.joined>first?s.joined:first,en=today()<last?today():last;if(en>=st){const n=dayList(st,en).length;absent=Math.max(0,n-present-leave);ded=Math.floor(absent*Math.floor(s.salary/dim))}}
+  const held=isHeld(s),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=jm===m&&jd>1;
+  const fd=s.fullDays==null?34:s.fullDays,dRate=Math.floor(s.salary/dim);
+  const isP=d=>at.some(a=>a.date===d&&a.type==='P');
+  const wholeMonth=fd>dim&&!prorated&&jm<=m;
+  const perfect=wholeMonth&&today()>last&&dayList(first,last).every(isP);
+  const soFarEnd=today()<last?today():last,onTrack=wholeMonth&&today()<=last&&soFarEnd>=first&&dayList(first,soFarEnd).every(isP);
+  const base=perfect?fd*dRate:(prorated?dRate*(dim-jd+1):s.salary),bonus=perfect?base-s.salary:0,potential=fd>dim?fd*dRate-s.salary:0;
+  const net=held?0:base-ded,bal=net-taken-settled;
+  return{at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,base,prorated,leave,perfect,bonus,onTrack,potential,jd};
+}
+function calcM(s,m){
+  const c=monthNet(s,m),start=trackStart(s);
+  const pre=D.pay.filter(p=>(p.fm||p.date.slice(0,7))<start).reduce((x,p)=>x+p.amt,0),op0=(s.opening||0)-pre;
+  if(m<start)return Object.assign({},c,{net:0,taken:0,settled:0,ded:0,bf:0,late:0,prev0:0,bal:op0});
+  let bf=0;
+  if(m>start){bf=op0;let k=start;while(k<m){const x=monthNet(s,k);bf+=x.net-x.taken-x.settled;k=shiftM(k,1)}}
+  else if(m===start)bf=op0;
+  const late=D.pay.filter(p=>p.date>=m+'-01'&&(p.fm||p.date.slice(0,7))<m).reduce((x,p)=>x+p.amt,0);
+  return Object.assign({},c,{bf,late,prev0:bf+late,bal:bf+c.net-c.taken-c.settled});
+}
+/* ---------- cloud: anonymous sign-in, one-time code, REST ---------- */
+async function authCall(grant,body){
+  const r=await fetch(cfg.url+'/auth/v1/'+grant,{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.access_token){const m=JSON.stringify(j);throw new Error(/anonymous/i.test(m)?t('anonOff'):(j.error_description||j.msg||j.message||('auth '+r.status)))}
+  cfg.session={access:j.access_token,refresh:j.refresh_token,exp:Math.floor(Date.now()/1000)+(j.expires_in||3600)};
+}
+const saveCfg=()=>LS.set('staff_cfg',cfg);
+const refreshSession=()=>authCall('token?grant_type=refresh_token',{refresh_token:cfg.session.refresh}).then(saveCfg);
+async function api(path,o){
+  o=o||{};
+  if(cfg.session&&cfg.session.exp<Date.now()/1000+60)await refreshSession();
+  const go=()=>fetch(cfg.url+path,{method:o.method||'GET',headers:{apikey:cfg.key,Authorization:'Bearer '+(cfg.session?cfg.session.access:cfg.key),'Content-Type':'application/json'},body:o.body});
+  let r=await go();
+  if(r.status===401&&cfg.session){await refreshSession();r=await go()}
+  if(!r.ok){let m='';try{const j=await r.json();m=j.message||j.hint||JSON.stringify(j)}catch(e){}throw new Error(r.status+' '+m)}
+  const tx=await r.text();return tx?JSON.parse(tx):null;
+}
+async function connect(url,key,code){
+  url=url.trim().replace(/\/+$/,'');if(!/^https?:\/\//.test(url))url='https://'+url;
+  const old=Object.assign({},cfg);
+  cfg={url,key:key.trim(),session:null,role:null,sid:null,name:null};
+  try{
+    await authCall('signup',{data:{}});
+    const r=await api('/rest/v1/rpc/redeem_invite',{method:'POST',body:JSON.stringify({p_code:code.trim()})});
+    if(r.role!=='staff'||!r.sid)throw new Error(t('wrongCode'));
+    cfg.role=r.role;cfg.sid=r.sid;cfg.name=r.name||null;saveCfg();
+  }catch(e){cfg=old;throw e}
+}
+function hashParams(){
+  const h=(location.hash||'').replace(/^#/,'');if(!h)return {};
+  const p={};h.split('&').forEach(x=>{const i=x.indexOf('=');if(i>0)p[x.slice(0,i)]=decodeURIComponent(x.slice(i+1))});return p;
+}
+async function pull(){
+  if(busy||!cfg.session||!cfg.sid)return;busy=true;
+  try{
+    const rows=[];
+    for(let off=0;;off+=1000){
+      const page=await api('/rest/v1/records?select=id,kind,data&sid=eq.'+encodeURIComponent(cfg.sid)+'&deleted=eq.false&order=id.asc&limit=1000&offset='+off);
+      rows.push(...page);if(page.length<1000)break;
+    }
+    const n={staff:null,att:[],pay:[],out:[],at:new Date().toISOString()};
+    rows.forEach(r=>{const d=Object.assign({},r.data||{},{id:r.id});
+      if(r.kind==='staff')n.staff=d;else if(r.kind==='att')n.att.push(d);else if(r.kind==='pay')n.pay.push(d);else if(r.kind==='out')n.out.push(d)});
+    D=n;last=n.at;LS.set('staff_data',D);netOk=true;
+  }catch(e){netOk=false}
+  busy=false;render();
+}
+/* ---------- screens ---------- */
+function setupHtml(){
+  if(SBC)return `<div style="padding-top:30px;text-align:center;margin-bottom:18px"><h1 style="margin:0 0 2px;font-size:30px">${t('title')}</h1><div class="sub">${esc(BIZ.name)} · ${esc(BIZ.place)}</div></div>${phonePart()}${langSeg()}`;
+  const p=hashParams();
+  return `<div style="padding-top:30px;text-align:center;margin-bottom:18px"><h1 style="margin:0 0 2px;font-size:30px">${t('title')}</h1><div class="sub">${esc(BIZ.name)} · ${esc(BIZ.place)}</div><div class="sub">${t('setupSub')}</div></div>
+  <div class="list"><div class="frow"><label>${t('url')}</label><input id="su" value="${esc(p.u||cfg.url||'')}" placeholder="https://xxxx.supabase.co" autocapitalize="off" autocomplete="off"></div>
+  <div class="frow"><label>${t('key')}</label><input id="sk" value="${esc(p.k||cfg.key||'')}" placeholder="eyJ..." autocapitalize="off" autocomplete="off"></div>
+  <div class="frow"><label>${t('code')}</label><input id="sc" value="${esc(p.c||'')}" placeholder="ABCD2345" autocapitalize="characters" autocomplete="off"></div></div>
+  <button class="btn pri" id="cb" onclick="doConnect()">${t('connect')}</button><div class="err" id="er"></div><div class="sub" style="padding:0 4px">${t('askOwner')}</div>${langSeg()}`;
+}
+const langSeg=()=>`<div class="seg"><button class="${lang==='en'?'on':''}" onclick="setLang('en')">English</button><button class="${lang==='hi'?'on':''}" onclick="setLang('hi')">हिन्दी</button></div>`;
+function setLang(l){lang=l;LS.set('staff_lang',l);document.documentElement.lang=l;render()}
+async function doConnect(){
+  const u=$('#su').value,k=$('#sk').value,c=$('#sc').value,er=$('#er');
+  if(!u.trim()||!k.trim()||!c.trim()){er.textContent=t('fill');return}
+  $('#cb').disabled=true;er.textContent='';
+  try{await connect(u,k,c);history.replaceState(null,'',location.pathname+location.search);D={staff:null,att:[],pay:[],out:[],at:''};await pull()}
+  catch(e){er.textContent=e.message;const b=$('#cb');if(b)b.disabled=false}
+}
+function disconnect(){if(!confirm(t('sure')))return;cfg={};LS.set('staff_cfg',{});LS.set('staff_data',null);D={staff:null,att:[],pay:[],out:[],at:''};render()}
+function shift(n){const nm=shiftM(month,n);if(nm>today().slice(0,7))return;month=nm;render()}
+function mainHtml(){
+  const s=D.staff;
+  if(!s)return `<div class="top"><button class="pill" onclick="pull()">${t('refresh')}</button></div><div class="card sub" style="text-align:center;padding:24px">${D.at?t('noAccess'):t('loading')}</div><button class="btn red" onclick="disconnect()">${t('disconnect')}</button>${langSeg()}`;
+  if(!month)month=today().slice(0,7);
+  const c=calcM(s,month),T=today(),todayAtt=D.att.find(a=>a.date===T),over=c.bal<0;
+  const ty=todayAtt?todayAtt.type:null;
+  const att={};D.att.forEach(a=>{att[a.date]=a});
+  const dim=c.dim,first=new Date(+month.slice(0,4),+month.slice(5)-1,1).getDay();
+  let cal=WS_[lang].map(w=>`<i>${w.slice(0,3)}</i>`).join('')+'<div style="visibility:hidden"></div>'.repeat(first);
+  for(let d=1;d<=dim;d++){
+    const ds=month+'-'+pad(d),a=att[ds];let cl='';
+    if(ds>T||(s.joined&&ds<s.joined))cl='f';else cl=a?a.type:'A';
+    cal+=`<div class="${cl}${ds===T?' t':''}">${d}</div>`;
+  }
+  const st0=(s.joined&&s.joined>month+'-01')?s.joined:month+'-01',en0=T<month+'-'+pad(dim)?T:month+'-'+pad(dim);
+  const absDays=en0>=st0?dayList(st0,en0).filter(d=>!att[d]).length:0;
+  const outs=D.out.filter(o=>(o.date||'').startsWith(month)).sort((a,b)=>(a.date+(a.out||''))<(b.date+(b.out||''))?1:-1);
+  const rows=[];
+  rows.push(`<div class="irow"><span>${t('salary')}</span><b>${rs(s.salary)}</b></div>`);
+  if(c.perfect)rows.push(`<div class="irow"><span>${t('bonus')}</span><b class="g">+ ${rs(c.bonus)}</b></div>`);
+  if(c.prorated)rows.push(`<div class="irow"><span>${t('prorated',{d:fmtD(s.joined)})}</span><b>${rs(c.base)}</b></div>`);
+  if(s.cut&&!c.held&&c.ded)rows.push(`<div class="irow"><span>${t('ded',{n:c.absent})}</span><b class="r">− ${rs(c.ded)}</b></div>`);
+  if(c.prev0)rows.push(`<div class="irow"><span>${c.prev0>0?t('prev'):t('prevAdv')}</span><b class="${c.prev0>0?'':'r'}">${rs(Math.abs(c.prev0))}</b></div>`);
+  rows.push(`<div class="irow"><span>${t('withdrawn')}</span><b>${rs(c.taken+c.settled)}</b></div>`);
+  const pays=c.pays.slice().sort((a,b)=>a.date<b.date?1:-1);
+  return `<div class="top"><button class="pill" onclick="pull()">${busy?'...':t('refresh')}</button><button class="pill" onclick="setLang('${lang==='en'?'hi':'en'}')">${lang==='en'?'हिन्दी':'English'}</button></div>
+  <div class="card"><div class="who">${av(s,56)}<div class="grow"><div class="nm">${esc(s.name)}</div><div class="sub">${esc(BIZ.name)}</div></div><div style="text-align:right"><div class="sub">${t('today')}</div><span class="tag ${ty||'A'}">${ty?({P:t('present'),H:t('half'),L:t('leave')}[ty]||t('absent')):t('notMarked')}</span>${todayAtt&&todayAtt.time?`<div class="sub" style="margin-top:3px">${fmtT(todayAtt.time)}</div>`:''}</div></div></div>
+  <div class="mbar"><button onclick="shift(-1)">‹</button><span>${mlabel(month)}</span><button onclick="shift(1)" ${month>=T.slice(0,7)?'disabled':''}>›</button></div>
+  <div class="tiles"><div><b class="g">${c.present}</b><span>${t('present')}</span></div><div><b style="color:var(--blue)">${c.leave}</b><span>${t('leave')}</span></div><div><b class="r">${absDays}</b><span>${t('absent')}</span></div></div>
+  <div class="card"><div class="big">${c.held?`<span class="sub">${t('dueOn')}</span><b>${fmtD(addMonth1(s.joined||T))}</b>`:`<span class="sub">${over?t('overdrawn'):t('remaining')}</span><b class="${over?'r':'g'}">${rs(Math.abs(c.bal))}</b>`}</div>${rows.join('')}${c.held?`<div class="banner">${t('held',{d:fmtD(dueDate(s))})}</div>`:''}${c.onTrack&&c.potential>0?`<div class="banner g">✓ ${t('onTrack',{a:rs(c.potential)})}</div>`:''}</div>
+  <div class="card"><div class="sec">${t('attendance')}</div><div class="cal">${cal}</div><div class="leg"><span><b style="background:var(--green)"></b>${t('lPresent')}</span><span><b style="background:var(--orange)"></b>${t('lHalf')}</span><span><b style="background:var(--blue)"></b>${t('lLeave')}</span><span><b style="background:var(--red);opacity:.4"></b>${t('lAbsent')}</span></div></div>
+  <div class="card"><div class="sec">${t('money')}</div>${pays.length?pays.map(p=>`<div class="irow"><span>${fmtD(p.date)} · ${p.kind==='take'?t('wd'):t('paid')}${p.note?' · '+esc(p.note):''}</span><b>${rs(p.amt)}</b></div>`).join(''):`<div class="sub">${t('noTx')}</div>`}</div>
+  <div class="card"><div class="sec">${t('outs')}</div>${outs.length?outs.map(o=>`<div class="irow"><span>${fmtD(o.date)}${o.note?' · '+esc(o.note):''}</span><b class="${o.in?'':'o'}">${fmtT(o.out)} → ${o.in?fmtT(o.in)+' · '+fmtDur(durMin(o.out,o.in)):t('outNow')}</b></div>`).join(''):`<div class="sub">${t('noOut')}</div>`}</div>
+  <div class="sub" style="text-align:center;margin:4px 0 14px">${netOk===false?t('offline')+' · ':''}${last?t('updated',{t:new Date(last).toLocaleString(lang==='hi'?'hi-IN':'en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}):''}</div>
+  <button class="btn red" onclick="disconnect()">${t('disconnect')}</button>`;
+}
+function render(){
+  const ae=document.activeElement;if(ae&&/^(su|sk|sc|phn)$/.test(ae.id||''))return;
+  $('#app').innerHTML=(cfg.session&&cfg.role==='staff'&&cfg.sid)?mainHtml():setupHtml();
+}
+document.documentElement.lang=lang;
+render();pull();
+setInterval(()=>{if(!document.hidden)pull()},90000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+</script>
+<script>
+/* PWA: service worker + install prompt */
+(function(){
+  var standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',function(){navigator.serviceWorker.register('sw-staff.js',{scope:'./staff.html'}).catch(function(){})});
+  if(standalone)return;
+  var KEY='staff_inst_hide',bar=null,dp=null,hi=document.documentElement.lang==='hi';
+  function hide(){if(bar){bar.remove();bar=null}}
+  function show(msg,btn,fn){
+    try{if(localStorage.getItem(KEY)==='1')return}catch(e){}
+    if(bar||!document.body)return;
+    bar=document.createElement('div');
+    bar.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:9999;background:#1c1c1e;color:#fff;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;font:14px/1.3 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.4)';
+    bar.innerHTML='<span style="flex:1">'+msg+'</span>'+(btn?'<button id="pwaI" style="background:#0a84ff;color:#fff;border-radius:9px;padding:8px 14px;font-weight:600;border:0">'+btn+'</button>':'')+'<button id="pwaX" style="color:#98989f;font-size:22px;padding:0 4px;border:0;background:none">&times;</button>';
+    document.body.appendChild(bar);
+    document.getElementById('pwaX').onclick=function(){try{localStorage.setItem(KEY,'1')}catch(e){}hide()};
+    if(btn)document.getElementById('pwaI').onclick=fn;
+  }
+  addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();dp=e;
+    show(hi?'Staff App को फ़ोन पर इंस्टॉल करें':'Install Staff App on your phone',hi?'इंस्टॉल':'Install',function(){hide();dp.prompt();dp=null});
+  });
+  addEventListener('appinstalled',hide);
+  if(/iphone|ipad|ipod/i.test(navigator.userAgent))setTimeout(function(){
+    show(hi?'इंस्टॉल: Safari में Share दबाएँ, फिर "Add to Home Screen"':'To install: tap Share in Safari, then "Add to Home Screen"',null);
+  },2500);
+})();
+</script>
+</body>
+</html>
