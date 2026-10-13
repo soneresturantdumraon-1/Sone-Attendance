@@ -77,7 +77,7 @@ button:disabled{opacity:.4}
 <script src="config.js"></script>
 <script>
 /* ===== mobile-number access: request -> owner approves (config.js needed) ===== */
-const SBC=(window.SB&&/^https?:\/\/[^X]/.test(window.SB.url||'')&&/^eyJ/.test(window.SB.key||''))?window.SB:null;
+const SBC=(window.SB&&/^https?:\/\/[a-z0-9]/i.test(window.SB.url||'')&&!/XXXX/.test(window.SB.url)&&(window.SB.key||'').length>=20&&window.SB.key!=='eyJ...')?window.SB:null;
 const ROLE_='staff';
 const PL={en:{mobile:'Mobile number',device:'Phone name',send:'Request access',badNum:'Enter a valid 10 digit mobile number.',nf:'This number is not registered. Ask the owner to add your number in the Staff page.',showCode:'Show this code to the owner',waiting:'Waiting for owner approval...',cancel:'Cancel',hS:'Enter your mobile number. The owner will approve you.',hK:'Name this phone, for example Door phone. The owner will approve it.',rej:'The owner rejected this request.'},
 hi:{mobile:'मोबाइल नंबर',device:'फ़ोन का नाम',send:'एक्सेस मांगें',badNum:'सही 10 अंकों का मोबाइल नंबर भरें।',nf:'यह नंबर दर्ज नहीं है। मालिक से स्टाफ पेज में अपना नंबर जुड़वाएँ।',showCode:'यह कोड मालिक को दिखाएँ',waiting:'मालिक की मंज़ूरी का इंतज़ार...',cancel:'रद्द करें',hS:'अपना मोबाइल नंबर भरें। मालिक आपको मंज़ूरी देंगे।',hK:'इस फ़ोन का नाम लिखें, जैसे Door phone। मालिक मंज़ूरी देंगे।',rej:'मालिक ने यह अनुरोध अस्वीकार किया।'}};
@@ -122,7 +122,7 @@ addEventListener('load',function(){if(SBC&&cfg.req&&cfg.session&&cfg.role!==ROLE
 <script>
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const BIZ={name:'SONE RESTAURANT',place:'Dumraon, Bihar'};
-let lang=LS.get('staff_lang','en'),cfg=LS.get('staff_cfg',{}),D=LS.get('staff_data',{staff:null,att:[],pay:[],out:[],at:''});
+let lang=LS.get('staff_lang','en'),cfg=LS.get('staff_cfg',{}),D=cleanD(LS.get('staff_data',null));
 let month=null,busy=false,netOk=null,last=D.at||'';
 const I={en:{
 title:'Staff App',setupSub:'See your own attendance, salary and balance',url:'Project URL',key:'Public key',code:'Access code',connect:'Connect',fill:'Enter the URL, key and code.',
@@ -172,6 +172,14 @@ function av(s,sz){
   if(s.photo)return `<img class="av" style="width:${sz}px;height:${sz}px" src="${esc(s.photo)}" alt="">`;
   let h=0;for(const ch of (s.name||'?'))h=(h*31+ch.charCodeAt(0))>>>0;
   return `<div class="av" style="width:${sz}px;height:${sz}px;background:${COLORS[h%COLORS.length]}">${esc((s.name||'?').trim()[0]?.toUpperCase()||'?')}</div>`;
+}
+function cleanD(n){
+  n=(n&&typeof n==='object')?n:{};
+  const okD=x=>x&&typeof x.date==='string'&&/^\d{4}-\d{2}-\d{2}/.test(x.date);
+  const o={staff:null,at:n.at||'',att:(n.att||[]).filter(okD),out:(n.out||[]).filter(okD),
+    pay:(n.pay||[]).filter(okD).map(p=>Object.assign({},p,{amt:+p.amt||0}))};
+  if(n.staff&&typeof n.staff==='object')o.staff=Object.assign({},n.staff,{name:n.staff.name||'?',salary:+n.staff.salary||0,opening:+n.staff.opening||0});
+  return o;
 }
 /* ---------- salary maths (same as the owner app) ---------- */
 function monthNet(s,m){
@@ -240,13 +248,13 @@ async function pull(){
   try{
     const rows=[];
     for(let off=0;;off+=1000){
-      const page=await api('/rest/v1/records?select=id,kind,data&sid=eq.'+encodeURIComponent(cfg.sid)+'&deleted=eq.false&order=id.asc&limit=1000&offset='+off);
+      const page=await api('/rest/v1/records?select=id,kind,data&sid=eq.'+encodeURIComponent(cfg.sid)+'&kind=in.(staff,att,pay,out)&deleted=eq.false&order=id.asc&limit=1000&offset='+off);
       rows.push(...page);if(page.length<1000)break;
     }
     const n={staff:null,att:[],pay:[],out:[],at:new Date().toISOString()};
     rows.forEach(r=>{const d=Object.assign({},r.data||{},{id:r.id});
       if(r.kind==='staff')n.staff=d;else if(r.kind==='att')n.att.push(d);else if(r.kind==='pay')n.pay.push(d);else if(r.kind==='out')n.out.push(d)});
-    D=n;last=n.at;LS.set('staff_data',D);netOk=true;
+    D=cleanD(n);last=D.at;LS.set('staff_data',D);netOk=true;
   }catch(e){netOk=false}
   busy=false;render();
 }
@@ -308,10 +316,17 @@ function mainHtml(){
   <button class="btn red" onclick="disconnect()">${t('disconnect')}</button>`;
 }
 function render(){
+  try{render0()}catch(e){
+    const m=String(e&&e.message||e);
+    $('#app').innerHTML=`<div class="card"><b>Error</b><div class="sub" style="word-break:break-word">${esc(m)}</div></div><button class="btn tint" onclick="try{localStorage.removeItem('staff_data')}catch(e){};location.reload()">Reload</button>`;
+  }
+}
+function render0(){
   const ae=document.activeElement;if(ae&&/^(su|sk|sc|phn)$/.test(ae.id||''))return;
   $('#app').innerHTML=(cfg.session&&cfg.role==='staff'&&cfg.sid)?mainHtml():setupHtml();
 }
 document.documentElement.lang=lang;
+D=cleanD(D);
 render();pull();
 setInterval(()=>{if(!document.hidden)pull()},90000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
