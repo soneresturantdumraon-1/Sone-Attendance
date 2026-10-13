@@ -58,6 +58,10 @@ svg{display:block;flex:none}
 .sh-h{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;position:sticky;top:0;background:var(--bg);z-index:2}.sh-t{font-weight:600}
 .lnk{color:var(--blue);min-width:72px;text-align:left}.lnk.b{font-weight:600;text-align:right}
 .sh-b{padding:4px 16px 22px}
+.alertbar{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:70;max-width:560px;margin:0 auto;background:rgba(44,44,46,.97);color:#fff;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:alertdown .3s}
+.alertbar .ai{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
+.alertbar b{display:block;font-size:15px}.alertbar span{font-size:12px;color:#c7c7cc}
+@keyframes alertdown{from{transform:translateY(-30px);opacity:0}to{transform:none;opacity:1}}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(30px + env(safe-area-inset-bottom,0px));background:rgba(40,40,42,.95);color:#fff;padding:11px 18px;border-radius:99px;z-index:60;font-size:15px;font-weight:500;max-width:90%;text-align:center}
 input.big{font-size:30px;font-weight:700;width:100%;text-align:center;border:0;background:transparent;color:var(--tx);outline:none;font-family:inherit;letter-spacing:4px}
 .brand{display:flex;align-items:center;gap:10px}.brand img{height:42px;width:auto}.brand b{display:block;font-size:15px;letter-spacing:.4px}.brand span{font-size:12px;color:var(--tx2)}
@@ -159,7 +163,7 @@ en:{cancel:'Cancel',close:'Close',save:'Save',hrS:'h',minS:'m',
  inToday:'{p} of {n} in today',nobody:'Nobody has checked in yet',outBadge:'OUT',
  online:'Online',offline:'Offline',waiting:'{n} waiting',syncNow:'Sync Now',
  settings:'Settings',language:'Language',sound:'Sound',voice:'Voice',test:'Test voice',pin:'Settings PIN',pinSet:'Set a 4-digit PIN',pinChange:'Change PIN',pinRemove:'Remove PIN',pinEnter:'Enter PIN',pinWrong:'Wrong PIN',pinSaved:'PIN saved',pinNone:'Not set',
- disconnect:'Disconnect this phone',disconnectQ:'Disconnect this phone?',disconnectMsg:'Saved faces and waiting punches on this phone will be removed.',yes:'Yes',refreshApp:'Refresh App (Clear Cache)',connectedTo:'Connected to',lastSync:'Last sync',never:'never',version:'Version'},
+ disconnect:'Disconnect this phone',disconnectQ:'Disconnect this phone?',disconnectMsg:'Saved faces and waiting punches on this phone will be removed.',yes:'Yes',refreshApp:'Refresh App (Clear Cache)',connectedTo:'Connected to',lastSync:'Last sync',never:'never',version:'Version',alNotify:'Phone notification',alDenied:'Notifications are blocked in the browser settings',rIn:'{n} has checked in',rOut:'{n} has gone out',rBack:'{n} is back. Was outside for {d}',tIn:'{n} checked in at {t}',tOut:'{n} went out at {t}',tBack:'{n} is back after {d}'},
 hi:{cancel:'रद्द करें',close:'बंद करें',save:'सेव',hrS:'घं',minS:'मि',
  title:'पंच ऐप',setupSub:'दरवाज़े वाले फोन के लिए हाज़िरी और बाहर / वापसी',url:'प्रोजेक्ट URL',key:'पब्लिक की',code:'एक्सेस कोड',connect:'जोड़ें',connecting:'जुड़ रहा है…',needAll:'URL, की और कोड भरें',
  anonOff:'अनाम साइन-इन बंद है। Supabase में Authentication > Sign In / Providers खोलकर "Allow anonymous sign-ins" चालू करें।',wrongCode:'यह कोड पंच ऐप का नहीं है। मालिक से पंच ऐप का कोड माँगें।',
@@ -171,7 +175,7 @@ hi:{cancel:'रद्द करें',close:'बंद करें',save:'स�
  inToday:'आज {n} में से {p} आए',nobody:'अभी किसी ने हाज़िरी नहीं लगाई',outBadge:'बाहर',
  online:'ऑनलाइन',offline:'ऑफलाइन',waiting:'{n} इंतज़ार में',syncNow:'अभी सिंक करें',
  settings:'सेटिंग्स',language:'भाषा',sound:'आवाज़',voice:'बोलना',test:'आवाज़ जाँचें',pin:'सेटिंग्स पिन',pinSet:'4 अंकों का पिन लगाएँ',pinChange:'पिन बदलें',pinRemove:'पिन हटाएँ',pinEnter:'पिन डालें',pinWrong:'गलत पिन',pinSaved:'पिन सेव हुआ',pinNone:'लगा नहीं है',
- disconnect:'इस फोन को डिस्कनेक्ट करें',disconnectQ:'इस फोन को डिस्कनेक्ट करें?',disconnectMsg:'इस फोन पर सेव चेहरे और इंतज़ार में पड़ी हाज़िरियाँ हट जाएँगी।',yes:'हाँ',refreshApp:'ऐप रिफ्रेश करें (कैश साफ़)',connectedTo:'जुड़ा है',lastSync:'पिछला सिंक',never:'कभी नहीं',version:'वर्ज़न'}
+ disconnect:'इस फोन को डिस्कनेक्ट करें',disconnectQ:'इस फोन को डिस्कनेक्ट करें?',disconnectMsg:'इस फोन पर सेव चेहरे और इंतज़ार में पड़ी हाज़िरियाँ हट जाएँगी।',yes:'हाँ',refreshApp:'ऐप रिफ्रेश करें (कैश साफ़)',connectedTo:'जुड़ा है',lastSync:'पिछला सिंक',never:'कभी नहीं',version:'वर्ज़न',alNotify:'फोन नोटिफिकेशन',alDenied:'ब्राउज़र सेटिंग में नोटिफिकेशन बंद हैं',rIn:'{n} की हाज़िरी लगी',rOut:'{n} बाहर गए',rBack:'{n} वापस आए। {d} बाहर रहे',tIn:'{n} की {t} पर हाज़िरी लगी',tOut:'{n} {t} पर बाहर गए',tBack:'{n} {d} बाद वापस आए'}
 };
 /* ===== shared by the Punch app and the Staff app ===== */
 const $=s=>document.querySelector(s);
@@ -273,6 +277,59 @@ function chime(kind){
 }
 function speak(txt){if(!pref('voice')||!('speechSynthesis' in window))return;try{const u=new SpeechSynthesisUtterance(txt);u.lang=lang==='hi'?'hi-IN':'en-IN';u.rate=.95;window.speechSynthesis.cancel();window.speechSynthesis.speak(u)}catch(e){}}
 function durWords(n){const h=Math.floor(n/60),m=n%60;if(lang==='hi')return (h?h+' घंटे ':'')+((m||!h)?m+' मिनट':'');return (h?h+(h>1?' hours ':' hour '):'')+((m||!h)?m+(m===1?' minute':' minutes'):'')}
+/* ---------- alerts for events from other devices: banner, sound, voice, phone notification ---------- */
+async function pushCall(path,o){if(!cfg.session)throw new Error('no session');return api(path,o)}
+const PUSH_WANT=()=>pref('notify');
+
+/* ---------- Web Push: notification even when the app is closed ---------- */
+const PUSH_KEY=(window.SB&&window.SB.vapid)||'';
+const pushOn=()=>{try{return localStorage.getItem('push_on')==='1'}catch(e){return false}};
+const pushSet=v=>{try{localStorage.setItem('push_on',v?'1':'0')}catch(e){}};
+function pushKey(s){const p='='.repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(r,c=>c.charCodeAt(0))}
+async function pushEnable(){
+  try{
+    if(!PUSH_KEY||!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))return false;
+    if(Notification.permission!=='granted')return false;
+    const reg=await navigator.serviceWorker.ready;
+    const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:pushKey(PUSH_KEY)});
+    const j=sub.toJSON();
+    await pushCall('/rest/v1/rpc/save_push_sub',{method:'POST',body:JSON.stringify({p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_lang:lang==='hi'?'hi':'en'})});
+    pushSet(true);return true;
+  }catch(e){return false}
+}
+async function pushOff(){
+  try{
+    pushSet(false);
+    const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();
+    if(sub){const ep=sub.endpoint;await sub.unsubscribe();try{await pushCall('/rest/v1/rpc/remove_push_sub',{method:'POST',body:JSON.stringify({p_endpoint:ep})})}catch(e){}}
+  }catch(e){}
+}
+addEventListener('load',()=>setTimeout(()=>{try{if(PUSH_KEY&&('Notification' in window)&&Notification.permission==='granted'&&PUSH_WANT())pushEnable()}catch(e){}},4000));
+
+async function askNotify(){try{if(!('Notification' in window))return;if(Notification.permission==='default')await Notification.requestPermission();if(Notification.permission==='denied')toast(t('alDenied'))}catch(e){}}
+function alertMsg(ev){
+  const n=(S.faces[ev.sid]||{}).name||'—',tm=ev.time?fmtT(ev.time):'';
+  if(ev.t==='in')return{text:t('tIn',{n,t:tm}),say:t('rIn',{n}),icon:'check',col:'#34c759'};
+  if(ev.t==='out')return{text:t('tOut',{n,t:tm}),say:t('rOut',{n}),icon:'out',col:'#ff9500'};
+  return{text:t('tBack',{n,d:fmtDur(ev.dur||0)}),say:t('rBack',{n,d:durWords(ev.dur||0)}),icon:'chL',col:'#007aff'};
+}
+function showAlertBar(m){
+  const d=document.createElement('div');d.className='alertbar';d.innerHTML=`<div class="ai" style="background:${m.col}">${ic(m.icon,20)}</div><div><b>${esc(biz.name)}</b><span>${esc(m.text)}</span></div>`;
+  d.onclick=()=>d.remove();document.body.appendChild(d);setTimeout(()=>d.remove(),7000);
+}
+function osNotify(m,ev){
+  try{
+    if(!document.hidden||pushOn()||!pref('notify')||!('Notification' in window)||Notification.permission!=='granted')return;
+    const opt={body:m.text,icon:'punch-192.png',tag:'att-'+ev.sid+ev.t,renotify:true,vibrate:[200,100,200]};
+    navigator.serviceWorker.getRegistration().then(r=>{if(r&&r.showNotification)r.showNotification(biz.name,opt);else new Notification(biz.name,opt)});
+  }catch(e){}
+}
+function announce(evs){
+  evs.filter(ev=>S.faces[ev.sid]).slice(0,5).forEach((ev,i)=>{
+    const m=alertMsg(ev);
+    setTimeout(()=>{showAlertBar(m);chime(ev.t);setTimeout(()=>speak(m.say),350);osNotify(m,ev)},i*2500);
+  });
+}
 /* ---------- local state helpers ---------- */
 function prune(){const T=today();Object.keys(S.att).forEach(k=>{if(S.att[k].date!==T)delete S.att[k]});Object.keys(S.outs).forEach(k=>{if(S.outs[k].date!==T)delete S.outs[k]})}
 const faceOf=sid=>S.faces[sid]||{id:sid,name:'?',photo:null};
@@ -292,8 +349,8 @@ function punchOutIn(sid){
   const now=Date.now();if(lockUntil[sid]&&now<lockUntil[sid])return{st:'recent'};
   lockUntil[sid]=now+60000;
   const tm=nowHM(),op=openOut(sid);
-  if(op){op.in=tm;queueRow({id:op.id,kind:'out',sid,data:op,deleted:false});return{st:'back',dur:durMin(op.out,tm),time:tm}}
-  const id=uid(),o={id,sid,date:today(),out:tm,in:null,note:''};S.outs[id]=o;queueRow({id,kind:'out',sid,data:o,deleted:false});return{st:'out',time:tm};
+  if(op){op.in=tm;op.src='punch';queueRow({id:op.id,kind:'out',sid,data:op,deleted:false});return{st:'back',dur:durMin(op.out,tm),time:tm}}
+  const id=uid(),o={id,sid,date:today(),out:tm,in:null,note:'',src:'punch'};S.outs[id]=o;queueRow({id,kind:'out',sid,data:o,deleted:false});return{st:'out',time:tm};
 }
 /* ---------- cloud sync ---------- */
 let flushing=false,pulling=false,netOk=null,lastSync=LS.get('punch_last','');
@@ -317,20 +374,31 @@ async function pull(){
       const page=await api('/rest/v1/records?select=*&kind=in.(face,att,out)&updated_at=gt.'+encodeURIComponent(since)+'&order=updated_at.asc,id.asc&limit=500&offset='+off);
       rows.push(...page);if(page.length<500)break;
     }
-    let max=S.since||'';const T=today(),queued=new Set(S.queue.map(q=>q.id));
+    let max=S.since||'';const T=today(),queued=new Set(S.queue.map(q=>q.id)),live=!!S.since,evs=[];
     rows.forEach(r=>{
       if(r.updated_at>max)max=r.updated_at;
       const d=r.data||{};
       if(r.kind==='face'){if(r.deleted)delete S.faces[r.sid];else S.faces[r.sid]=d}
       else if(r.kind==='att'){
         if(r.deleted){for(const k in S.att)if(S.att[k].id===r.id)delete S.att[k]}
-        else if(d.date===T&&!queued.has(r.id))S.att[d.sid||r.sid]=Object.assign({},d,{id:r.id});
+        else if(d.date===T&&!queued.has(r.id)){
+          const sid=d.sid||r.sid,old=S.att[sid],was=old&&(old.type==='P'||old.type==='H');
+          if(live&&(d.type==='P'||d.type==='H')&&!was)evs.push({t:'in',sid,time:d.time||''});
+          S.att[sid]=Object.assign({},d,{id:r.id});
+        }
       }else if(r.kind==='out'){
         if(r.deleted)delete S.outs[r.id];
-        else if(d.date===T&&!queued.has(r.id))S.outs[r.id]=Object.assign({},d,{id:r.id});
+        else if(d.date===T&&!queued.has(r.id)){
+          const old=S.outs[r.id],sid=d.sid||r.sid;
+          if(live&&d.out){
+            if(!old&&!d.in)evs.push({t:'out',sid,time:d.out});
+            else if(old&&!old.in&&d.in)evs.push({t:'back',sid,dur:durMin(d.out,d.in)});
+          }
+          S.outs[r.id]=Object.assign({},d,{id:r.id});
+        }
       }
     });
-    S.since=max;prune();persist();netOk=true;lastSync=new Date().toISOString();LS.set('punch_last',lastSync);
+    S.since=max;prune();persist();netOk=true;lastSync=new Date().toISOString();LS.set('punch_last',lastSync);announce(evs);
   }catch(e){netOk=false;lastErr=e.message}
   pulling=false;updNet();updList();
 }
@@ -460,6 +528,7 @@ function settingsSheet(){
    <div class="frow"><label>${t('language')}</label><div class="seg" style="margin:0;width:190px"><button class="${lang==='en'?'on':''}" onclick="setLang('en');settingsSheet()">English</button><button class="${lang==='hi'?'on':''}" onclick="setLang('hi');settingsSheet()">हिन्दी</button></div></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('sound')}</label><input type="checkbox" class="sw" ${pref('sound')?'checked':''} onchange="cfg.sound=this.checked;saveCfg()"></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('voice')}</label><input type="checkbox" class="sw" ${pref('voice')?'checked':''} onchange="cfg.voice=this.checked;saveCfg()"></div>
+   <div class="frow"><label class="grow" style="min-width:0">${t('alNotify')}</label><input type="checkbox" class="sw" ${pref('notify')?'checked':''} onchange="cfg.notify=this.checked;saveCfg();if(this.checked)askNotify().then(()=>pushEnable());else pushOff()"></div>
    <button class="lrow" onclick="unlockAudio();chime('in');setTimeout(()=>speak(t('sIn',{n:'Suraj'})),350)"><span class="grow">${t('test')}</span>${ic('chR',18)}</button>
    <button class="lrow" onclick="pinSheet()"><span class="grow">${t('pin')}</span><span class="sub">${cfg.pin?'••••':t('pinNone')}</span>${ic('chR',18)}</button>
    <button class="lrow" onclick="syncAll();toast(t('syncNow'))"><span class="grow">${t('syncNow')}</span>${ic('refresh',18)}</button>

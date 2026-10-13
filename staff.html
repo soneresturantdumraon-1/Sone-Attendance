@@ -68,6 +68,15 @@ button:disabled{opacity:.4}
 .banner{border-radius:10px;padding:10px 12px;font-size:14px;margin-top:8px;background:var(--fill)}
 .banner.g{background:color-mix(in srgb,var(--green) 14%,transparent)}.banner.r{background:color-mix(in srgb,var(--red) 14%,transparent)}
 .err{color:var(--red);font-size:14px;margin:8px 4px;min-height:18px}
+.sw{-webkit-appearance:none;appearance:none;width:51px;height:31px;border-radius:99px;background:rgba(120,120,128,.32);position:relative;transition:.2s;margin:0;flex:none;border:0}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transition:.2s}
+.sw:checked{background:var(--green)}.sw:checked::after{transform:translateX(20px)}
+.frow input.sw{flex:none;padding:0}
+button.frow{width:100%;text-align:left;justify-content:space-between;color:var(--blue);font-weight:600}
+.alertbar{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:70;max-width:560px;margin:0 auto;background:rgba(28,28,30,.97);color:#fff;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:alertdown .3s}
+.alertbar .ai{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;flex:none;font-weight:700}
+.alertbar b{display:block;font-size:15px}.alertbar span{font-size:12px;color:#c7c7cc}
+@keyframes alertdown{from{transform:translateY(-30px);opacity:0}to{transform:none;opacity:1}}
 .top{display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px}
 .pill{background:var(--fill);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:600}
 </style>
@@ -132,7 +141,7 @@ salary:'Monthly Salary',bonus:'No-leave bonus',prorated:'Pro-rated from {d}',ded
 remaining:'Remaining',overdrawn:'Overdrawn (advance)',dueOn:'Salary due on',held:'Salary not payable yet. Due on {d}.',onTrack:'On track for a {a} bonus',
 attendance:'Attendance',lPresent:'Present',lHalf:'Half',lLeave:'Leave',lAbsent:'Absent',money:'Money taken',noTx:'No withdrawals this month',wd:'Withdrawal',paid:'Salary paid',
 outs:'Out / In',noOut:'No outings this month',outNow:'Out now',since:'since {t}',updated:'Updated {t}',offline:'Offline, showing saved data',refresh:'Refresh',
-duesAdv:'Dues & Advance',duesL:'Dues (to receive)',advL:'Advance (to return)',advTotal:'Total taken till now',advMonth:'Taken this month',duesNote:'Balance as of end of {m}',loading:'Loading...',noAccess:'No data found. Your access may have been removed. Ask the owner for a new link.',disconnect:'Disconnect this phone',sure:'Disconnect this phone from the Staff app?',hrS:'h',minS:'m'},
+alertsSec:'Alerts',alNotify:'Phone notification',alSound:'Sound',alTest:'Test alert',alDenied:'Notifications are blocked in the browser settings',nAtt:'Attendance marked: {ty} ({d})',nTake:'Withdrawal recorded: {a} ({d})',nPaid:'Salary paid: {a} ({d})',nOut:'Out time recorded: {t}',nBack:'Back at {t}. Outside for {du}',nMore:'+{n} more updates',nTest:'This is a test alert',duesAdv:'Dues & Advance',duesL:'Dues (to receive)',advL:'Advance (to return)',advTotal:'Total taken till now',advMonth:'Taken this month',duesNote:'Balance as of end of {m}',loading:'Loading...',noAccess:'No data found. Your access may have been removed. Ask the owner for a new link.',disconnect:'Disconnect this phone',sure:'Disconnect this phone from the Staff app?',hrS:'h',minS:'m'},
 hi:{
 title:'स्टाफ ऐप',setupSub:'अपनी हाज़िरी, वेतन और हिसाब देखें',url:'प्रोजेक्ट URL',key:'पब्लिक की',code:'एक्सेस कोड',connect:'कनेक्ट करें',fill:'URL, की और कोड भरें।',
 anonOff:'Anonymous sign-in बंद है। Supabase में Authentication > Sign In / Providers में "Allow anonymous sign-ins" चालू करें।',wrongCode:'यह कोड स्टाफ ऐप का नहीं है।',askOwner:'मालिक से अपना लिंक मांगें: स्टाफ पेज > Staff App Access।',
@@ -141,7 +150,7 @@ salary:'मासिक वेतन',bonus:'बिना छुट्टी ब
 remaining:'शेष',overdrawn:'अधिक लिया (अग्रिम)',dueOn:'वेतन देय',held:'वेतन अभी देय नहीं। देय तिथि {d}।',onTrack:'{a} बोनस की राह पर',
 attendance:'हाज़िरी',lPresent:'उपस्थित',lHalf:'आधा',lLeave:'छुट्टी',lAbsent:'अनुपस्थित',money:'लिया गया पैसा',noTx:'इस माह कोई निकासी नहीं',wd:'निकासी',paid:'वेतन दिया',
 outs:'बाहर / वापस',noOut:'इस माह कोई बाहर जाना नहीं',outNow:'अभी बाहर',since:'{t} से',updated:'अपडेट {t}',offline:'ऑफलाइन, सेव किया डेटा दिख रहा है',refresh:'रिफ्रेश',
-duesAdv:'बकाया और अग्रिम',duesL:'बकाया (मिलना है)',advL:'अग्रिम (लौटाना है)',advTotal:'अब तक कुल लिया',advMonth:'इस माह लिया',duesNote:'{m} के अंत तक का हिसाब',loading:'लोड हो रहा है...',noAccess:'कोई डेटा नहीं मिला। हो सकता है आपका एक्सेस हटा दिया गया हो। मालिक से नया लिंक मांगें।',disconnect:'इस फ़ोन को डिसकनेक्ट करें',sure:'इस फ़ोन को स्टाफ ऐप से डिसकनेक्ट करें?',hrS:'घं',minS:'मि'}};
+alertsSec:'अलर्ट',alNotify:'फोन नोटिफिकेशन',alSound:'आवाज़',alTest:'अलर्ट जाँचें',alDenied:'ब्राउज़र सेटिंग में नोटिफिकेशन बंद हैं',nAtt:'हाज़िरी दर्ज: {ty} ({d})',nTake:'निकासी दर्ज: {a} ({d})',nPaid:'वेतन दिया: {a} ({d})',nOut:'बाहर जाने का समय दर्ज: {t}',nBack:'{t} पर वापसी। {du} बाहर रहे',nMore:'+{n} और अपडेट',nTest:'यह एक जाँच अलर्ट है',duesAdv:'बकाया और अग्रिम',duesL:'बकाया (मिलना है)',advL:'अग्रिम (लौटाना है)',advTotal:'अब तक कुल लिया',advMonth:'इस माह लिया',duesNote:'{m} के अंत तक का हिसाब',loading:'लोड हो रहा है...',noAccess:'कोई डेटा नहीं मिला। हो सकता है आपका एक्सेस हटा दिया गया हो। मालिक से नया लिंक मांगें।',disconnect:'इस फ़ोन को डिसकनेक्ट करें',sure:'इस फ़ोन को स्टाफ ऐप से डिसकनेक्ट करें?',hrS:'घं',minS:'मि'}};
 const t=(k,o)=>{let v=(I[lang]&&I[lang][k])||I.en[k]||k;if(o)for(const x in o)v=v.split('{'+x+'}').join(o[x]);return v};
 const WS_={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],hi:['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि']};
 const MS_={en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],hi:['जन','फ़र','मार्च','अप्रै','मई','जून','जुल','अग','सित','अक्टू','नव','दिस']};
@@ -210,6 +219,85 @@ function calcM(s,m){
   const late=D.pay.filter(p=>p.date>=m+'-01'&&(p.fm||p.date.slice(0,7))<m).reduce((x,p)=>x+p.amt,0);
   return Object.assign({},c,{bf,late,prev0:bf+late,bal:bf+c.net-c.taken-c.settled});
 }
+/* ---------- alerts: banner, sound, phone notification ---------- */
+let audioCtx=null;
+function unlockAudio(){try{if(!audioCtx){const C=window.AudioContext||window.webkitAudioContext;if(C)audioCtx=new C()}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}catch(e){}}
+['click','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true}));
+const al=()=>Object.assign({sound:true,notify:true},(cfg&&cfg.alerts)||{});
+function setAl(k,v){cfg.alerts=Object.assign(al(),{[k]:!!v});saveCfg();unlockAudio();if(k==='notify'){if(v)askNotify().then(()=>pushEnable());else pushOff()}}
+async function askNotify(){try{if(!('Notification' in window))return;if(Notification.permission==='default')await Notification.requestPermission();if(Notification.permission==='denied')showBar({text:t('alDenied'),glyph:'!',col:'#ff9500'})}catch(e){}}
+function chime(){
+  if(!al().sound)return;
+  try{unlockAudio();if(!audioCtx)return;const t0=audioCtx.currentTime;
+    [[784,0],[988,.16]].forEach(([f,d])=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t0+d);g.gain.exponentialRampToValueAtTime(.35,t0+d+.02);g.gain.exponentialRampToValueAtTime(.0001,t0+d+.32);o.connect(g);g.connect(audioCtx.destination);o.start(t0+d);o.stop(t0+d+.34)});
+  }catch(e){}
+}
+function showBar(m){
+  const d=document.createElement('div');d.className='alertbar';d.innerHTML=`<div class="ai" style="background:${m.col}">${esc(m.glyph)}</div><div><b>${esc(BIZ.name)}</b><span>${esc(m.text)}</span></div>`;
+  d.onclick=()=>d.remove();document.body.appendChild(d);setTimeout(()=>d.remove(),7000);
+}
+function osNotify(m,i){
+  try{
+    if(!document.hidden||pushOn()||!al().notify||!('Notification' in window)||Notification.permission!=='granted')return;
+    const opt={body:m.text,icon:'staff-192.png',tag:'staff-'+(m.tag||i),renotify:true,vibrate:[200,100,200]};
+    navigator.serviceWorker.getRegistration().then(r=>{if(r&&r.showNotification)r.showNotification(BIZ.name,opt);else new Notification(BIZ.name,opt)});
+  }catch(e){}
+}
+async function pushCall(path,o){if(!cfg.session)throw new Error('no session');return api(path,o)}
+const PUSH_WANT=()=>al().notify;
+
+/* ---------- Web Push: notification even when the app is closed ---------- */
+const PUSH_KEY=(window.SB&&window.SB.vapid)||'';
+const pushOn=()=>{try{return localStorage.getItem('push_on')==='1'}catch(e){return false}};
+const pushSet=v=>{try{localStorage.setItem('push_on',v?'1':'0')}catch(e){}};
+function pushKey(s){const p='='.repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(r,c=>c.charCodeAt(0))}
+async function pushEnable(){
+  try{
+    if(!PUSH_KEY||!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))return false;
+    if(Notification.permission!=='granted')return false;
+    const reg=await navigator.serviceWorker.ready;
+    const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:pushKey(PUSH_KEY)});
+    const j=sub.toJSON();
+    await pushCall('/rest/v1/rpc/save_push_sub',{method:'POST',body:JSON.stringify({p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_lang:lang==='hi'?'hi':'en'})});
+    pushSet(true);return true;
+  }catch(e){return false}
+}
+async function pushOff(){
+  try{
+    pushSet(false);
+    const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();
+    if(sub){const ep=sub.endpoint;await sub.unsubscribe();try{await pushCall('/rest/v1/rpc/remove_push_sub',{method:'POST',body:JSON.stringify({p_endpoint:ep})})}catch(e){}}
+  }catch(e){}
+}
+addEventListener('load',()=>setTimeout(()=>{try{if(PUSH_KEY&&('Notification' in window)&&Notification.permission==='granted'&&PUSH_WANT())pushEnable()}catch(e){}},4000));
+
+const sigOf=r=>JSON.stringify([r.type,r.time,r.kind,r.amt,r.out,r.in,r.date]);
+function diffEvs(o,n){
+  if(!o||!o.at||!o.staff)return[];
+  const from=dstr(new Date(Date.now()-2*864e5)),ev=[];
+  const cmp=(a,b,k)=>{const old={};a.forEach(x=>old[x.id]=x);b.forEach(x=>{const p=old[x.id];if(x.date>=from&&(!p||sigOf(p)!==sigOf(x)))ev.push({k,r:x})})};
+  cmp(o.att,n.att,'att');cmp(o.pay,n.pay,'pay');cmp(o.out,n.out,'out');
+  return ev;
+}
+function evMsg(e){
+  const r=e.r;
+  if(e.k==='att'){const ty={P:t('present'),H:t('half'),L:t('leave')}[r.type];return ty?{text:t('nAtt',{ty,d:fmtD(r.date)}),glyph:'✓',col:'#34c759',tag:'att'+r.id}:null}
+  if(e.k==='pay'){
+    if(r.kind==='take')return{text:t('nTake',{a:rs(r.amt),d:fmtD(r.date)}),glyph:'₹',col:'#ff9500',tag:'pay'+r.id};
+    if(r.kind==='settle')return{text:t('nPaid',{a:rs(r.amt),d:fmtD(r.date)}),glyph:'₹',col:'#007aff',tag:'pay'+r.id};
+    return null;
+  }
+  if(!r.out)return null;
+  if(r.in)return{text:t('nBack',{t:fmtT(r.in),du:fmtDur(durMin(r.out,r.in))}),glyph:'↩',col:'#007aff',tag:'out'+r.id};
+  return{text:t('nOut',{t:fmtT(r.out)}),glyph:'↗',col:'#ff9500',tag:'out'+r.id};
+}
+function announce(evs){
+  const ms=evs.map(evMsg).filter(Boolean);if(!ms.length)return;
+  const show=ms.slice(0,4);
+  if(ms.length>4)show.push({text:t('nMore',{n:ms.length-4}),glyph:'+',col:'#8e8e93',tag:'more'});
+  show.forEach((m,i)=>setTimeout(()=>{showBar(m);chime();osNotify(m,i)},i*2500));
+}
+function testAlert(){unlockAudio();const m={text:t('nTest'),glyph:'✓',col:'#34c759',tag:'test'};showBar(m);chime();osNotify(m,0)}
 /* ---------- cloud: anonymous sign-in, one-time code, REST ---------- */
 async function authCall(grant,body){
   const r=await fetch(cfg.url+'/auth/v1/'+grant,{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -244,7 +332,7 @@ function hashParams(){
   const p={};h.split('&').forEach(x=>{const i=x.indexOf('=');if(i>0)p[x.slice(0,i)]=decodeURIComponent(x.slice(i+1))});return p;
 }
 async function pull(){
-  if(busy||!cfg.session||!cfg.sid)return;busy=true;
+  if(busy||!cfg.session||!cfg.sid)return;busy=true;let evs=[];
   try{
     const rows=[];
     for(let off=0;;off+=1000){
@@ -254,9 +342,9 @@ async function pull(){
     const n={staff:null,att:[],pay:[],out:[],at:new Date().toISOString()};
     rows.forEach(r=>{const d=Object.assign({},r.data||{},{id:r.id});
       if(r.kind==='staff')n.staff=d;else if(r.kind==='att')n.att.push(d);else if(r.kind==='pay')n.pay.push(d);else if(r.kind==='out')n.out.push(d)});
-    D=cleanD(n);last=D.at;LS.set('staff_data',D);netOk=true;
+    const nd=cleanD(n);evs=diffEvs(D,nd);D=nd;last=D.at;LS.set('staff_data',D);netOk=true;
   }catch(e){netOk=false}
-  busy=false;render();
+  busy=false;render();announce(evs);
 }
 /* ---------- screens ---------- */
 function setupHtml(){
@@ -314,6 +402,8 @@ function mainHtml(){
   <div class="card"><div class="sec">${t('money')}</div>${pays.length?pays.map(p=>`<div class="irow"><span>${fmtD(p.date)} · ${p.kind==='take'?t('wd'):t('paid')}${p.note?' · '+esc(p.note):''}</span><b>${rs(p.amt)}</b></div>`).join(''):`<div class="sub">${t('noTx')}</div>`}</div>
   <div class="card"><div class="sec">${t('outs')}</div>${outs.length?outs.map(o=>`<div class="irow"><span>${fmtD(o.date)}${o.note?' · '+esc(o.note):''}</span><b class="${o.in?'':'o'}">${fmtT(o.out)} → ${o.in?fmtT(o.in)+' · '+fmtDur(durMin(o.out,o.in)):t('outNow')}</b></div>`).join(''):`<div class="sub">${t('noOut')}</div>`}</div>
   <div class="sub" style="text-align:center;margin:4px 0 14px">${netOk===false?t('offline')+' · ':''}${last?t('updated',{t:new Date(last).toLocaleString(lang==='hi'?'hi-IN':'en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}):''}</div>
+  <div class="sec" style="margin:0 4px 8px">${t('alertsSec')}</div>
+  <div class="list"><div class="frow"><label style="flex:1">${t('alNotify')}</label><input type="checkbox" class="sw" ${al().notify?'checked':''} onchange="setAl('notify',this.checked)"></div><div class="frow"><label style="flex:1">${t('alSound')}</label><input type="checkbox" class="sw" ${al().sound?'checked':''} onchange="setAl('sound',this.checked)"></div><button class="frow" onclick="testAlert()">${t('alTest')}</button></div>
   <button class="btn red" onclick="disconnect()">${t('disconnect')}</button>`;
 }
 function render(){

@@ -184,6 +184,7 @@ textarea{width:100%;border:0;border-radius:12px;background:var(--card);color:var
 <div id="sheetbg"><div id="sheet"></div></div>
 <div id="alertbg"><div id="alert"></div></div>
 
+<script src="config.js"></script>
 <script>
 (function(){
   var errs=[];
@@ -1343,7 +1344,7 @@ let audioCtx=null;
 function unlockAudio(){try{if(!audioCtx){const C=window.AudioContext||window.webkitAudioContext;if(C)audioCtx=new C()}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}catch(e){}}
 ['click','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true}));
 const al=()=>Object.assign({sound:true,voice:true,notify:true},cfg.alerts||{});
-function setAl(k,v){cfg.alerts=Object.assign(al(),{[k]:!!v});saveCfg();unlockAudio();if(k==='notify'&&v)askNotify()}
+function setAl(k,v){cfg.alerts=Object.assign(al(),{[k]:!!v});saveCfg();unlockAudio();if(k==='notify'){if(v)askNotify().then(()=>pushEnable());else pushOff()}}
 async function askNotify(){try{if(!('Notification' in window))return;if(Notification.permission==='default')await Notification.requestPermission();if(Notification.permission==='denied')toast(t('alDenied'))}catch(e){}}
 function chime(kind){
   if(!al().sound)return;
@@ -1368,7 +1369,7 @@ function showAlertBar(m){
 }
 function osNotify(m,ev){
   try{
-    if(!document.hidden||!al().notify||!('Notification' in window)||Notification.permission!=='granted')return;
+    if(!document.hidden||pushOn()||!al().notify||!('Notification' in window)||Notification.permission!=='granted')return;
     const opt={body:m.text,icon:LOGO_MARK,tag:'att-'+ev.sid+ev.t,renotify:true,vibrate:[200,100,200]};
     navigator.serviceWorker.getRegistration().then(r=>{if(r&&r.showNotification)r.showNotification(biz().name,opt);else new Notification(biz().name,opt)});
   }catch(e){}
@@ -1383,6 +1384,34 @@ function testAlert(){unlockAudio();announce([{t:'in',sid:db.staff[0]?db.staff[0]
 function alertsSheet(){
   sheet(t('alRecent'),alertLog.length?`<div class="list" style="padding:0 14px">${alertLog.map(a=>`<div class="irow"><span>${esc(a.text)}</span><b class="sub" style="font-weight:400">${fmtT(new Date(a.at).toTimeString().slice(0,5))}</b></div>`).join('')}</div>`:`<div class="empty">${t('alNone')}</div>`,{left:t('close')});
 }
+
+async function pushCall(path,o){const c=sbCfg();if(!c||!c.url||!c.key)throw new Error('no cloud');await sbEnsure(c);return sbReq(c,path,o)}
+const PUSH_WANT=()=>al().notify;
+
+/* ---------- Web Push: notification even when the app is closed ---------- */
+const PUSH_KEY=(window.SB&&window.SB.vapid)||'';
+const pushOn=()=>{try{return localStorage.getItem('push_on')==='1'}catch(e){return false}};
+const pushSet=v=>{try{localStorage.setItem('push_on',v?'1':'0')}catch(e){}};
+function pushKey(s){const p='='.repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(r,c=>c.charCodeAt(0))}
+async function pushEnable(){
+  try{
+    if(!PUSH_KEY||!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))return false;
+    if(Notification.permission!=='granted')return false;
+    const reg=await navigator.serviceWorker.ready;
+    const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:pushKey(PUSH_KEY)});
+    const j=sub.toJSON();
+    await pushCall('/rest/v1/rpc/save_push_sub',{method:'POST',body:JSON.stringify({p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_lang:lang==='hi'?'hi':'en'})});
+    pushSet(true);return true;
+  }catch(e){return false}
+}
+async function pushOff(){
+  try{
+    pushSet(false);
+    const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();
+    if(sub){const ep=sub.endpoint;await sub.unsubscribe();try{await pushCall('/rest/v1/rpc/remove_push_sub',{method:'POST',body:JSON.stringify({p_endpoint:ep})})}catch(e){}}
+  }catch(e){}
+}
+addEventListener('load',()=>setTimeout(()=>{try{if(PUSH_KEY&&('Notification' in window)&&Notification.permission==='granted'&&PUSH_WANT())pushEnable()}catch(e){}},4000));
 
 /* ---------- Team apps: access codes for the punch phone and staff phones ---------- */
 const appBase=()=>location.href.split('#')[0].split('?')[0].replace(/[^\/]*$/,'');
