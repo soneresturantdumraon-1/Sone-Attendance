@@ -17,10 +17,22 @@ self.addEventListener('fetch',e=>{
     return res;
   }).catch(()=>caches.match(r,{ignoreSearch:true}).then(x=>x||(r.mode==='navigate'?caches.match('./index.html',{ignoreSearch:true}):Response.error()))));
 });
+
+/* ---- Web Push: notification when the app is closed ---- */
+self.addEventListener('push',e=>{
+  let d={};try{d=e.data?e.data.json():{}}catch(_){d={body:e.data?e.data.text():''}}
+  e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(cs=>{
+    if(cs.some(c=>c.visibilityState==='visible'))return; /* app open: in-app banner handles it */
+    return self.registration.showNotification(d.title||'SONE RESTAURANT',{body:d.body||'',icon:d.icon||undefined,tag:d.tag||undefined,renotify:true,silent:false,vibrate:[200,100,200],data:{url:d.url||''}});
+  }));
+});
 self.addEventListener('notificationclick',e=>{
   e.notification.close();
+  const u=(e.notification.data&&e.notification.data.url)||'';
+  const norm=x=>new URL(x,self.registration.scope).pathname.replace(/index\.html$/,'');
   e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(cs=>{
-    for(const c of cs){if('focus' in c)return c.focus()}
-    return self.clients.openWindow('./index.html');
+    const hit=u?cs.find(c=>norm(c.url)===norm(u)):cs[0];
+    if(hit&&'focus' in hit)return hit.focus();
+    return self.clients.openWindow(u||'./index.html');
   }));
 });
