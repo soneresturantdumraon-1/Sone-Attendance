@@ -198,17 +198,18 @@ function monthNet(s,m){
   const present=at.reduce((x,a)=>x+(a.type==='P'?1:a.type==='H'?.5:0),0),leave=at.filter(a=>a.type==='L').length;
   const pays=D.pay.filter(p=>(p.fm||p.date.slice(0,7))===m);
   const taken=sumP(pays,'take'),settled=sumP(pays,'settle');
+  const lm=s.left?s.left.slice(0,7):'',after=!!lm&&m>lm,leaving=lm===m,ld=leaving?parse(s.left).d:dim;
   let ded=0,absent=0;
-  if(s.cut){const st=s.joined>first?s.joined:first,en=today()<last?today():last;if(en>=st){const n=dayList(st,en).length;absent=Math.max(0,n-present-leave);ded=Math.floor(absent*Math.floor(s.salary/dim))}}
-  const held=isHeld(s),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=jm===m&&jd>1;
+  if(s.cut&&!after){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const n=dayList(st,en).length;absent=Math.max(0,n-present-leave);ded=Math.floor(absent*Math.floor(s.salary/dim))}}
+  const held=isHeld(s),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=(jm===m&&jd>1)||leaving;
   const fd=s.fullDays==null?34:s.fullDays,dRate=Math.floor(s.salary/dim);
   const isP=d=>at.some(a=>a.date===d&&a.type==='P');
-  const wholeMonth=fd>dim&&!prorated&&jm<=m;
+  const wholeMonth=fd>dim&&!prorated&&jm<=m&&(!lm||m<lm);
   const perfect=wholeMonth&&today()>last&&dayList(first,last).every(isP);
   const soFarEnd=today()<last?today():last,onTrack=wholeMonth&&today()<=last&&soFarEnd>=first&&dayList(first,soFarEnd).every(isP);
-  const base=perfect?fd*dRate:(prorated?dRate*(dim-jd+1):s.salary),bonus=perfect?base-s.salary:0,potential=fd>dim?fd*dRate-s.salary:0;
-  const net=held?0:base-ded,bal=net-taken-settled;
-  return{at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,base,prorated,leave,perfect,bonus,onTrack,potential,jd};
+  const base=after?0:perfect?fd*dRate:(prorated?dRate*Math.max(0,ld-jd+1):s.salary),bonus=perfect?base-s.salary:0,potential=fd>dim&&!lm?fd*dRate-s.salary:0;
+  const net=held||after?0:base-ded,bal=net-taken-settled;
+  return{after,at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,base,prorated,leave,perfect,bonus,onTrack,potential,jd};
 }
 function calcM(s,m){
   const c=monthNet(s,m),start=trackStart(s);
