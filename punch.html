@@ -287,16 +287,17 @@ const PUSH_KEY=(window.SB&&window.SB.vapid)||'BCAD7Hz6gAygJLkqfCsFX9eDju60knacxv
 const pushOn=()=>{try{return localStorage.getItem('push_on')==='1'}catch(e){return false}};
 const pushSet=v=>{try{localStorage.setItem('push_on',v?'1':'0')}catch(e){}};
 function pushKey(s){const p='='.repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(r,c=>c.charCodeAt(0))}
-async function pushEnable(){
+async function pushEnable(show){
+  const say=m=>{if(!show)return;try{if(typeof toast==='function')toast(m);else showBar({text:m,glyph:'!',col:'#ff9500'})}catch(_){}};
   try{
-    if(!PUSH_KEY||!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))return false;
-    if(Notification.permission!=='granted')return false;
+    if(!PUSH_KEY||!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window)){say('Push not supported in this browser');return false}
+    if(Notification.permission!=='granted'){say('Notification permission not allowed');return false}
     const reg=await navigator.serviceWorker.ready;
     const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:pushKey(PUSH_KEY)});
     const j=sub.toJSON();
     await pushCall('/rest/v1/rpc/save_push_sub',{method:'POST',body:JSON.stringify({p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_lang:lang==='hi'?'hi':'en'})});
-    pushSet(true);return true;
-  }catch(e){return false}
+    pushSet(true);say('Push enabled ✓');return true;
+  }catch(e){say('Push error: '+((e&&e.message)||e));return false}
 }
 async function pushOff(){
   try{
@@ -529,7 +530,7 @@ function settingsSheet(){
    <div class="frow"><label>${t('language')}</label><div class="seg" style="margin:0;width:190px"><button class="${lang==='en'?'on':''}" onclick="setLang('en');settingsSheet()">English</button><button class="${lang==='hi'?'on':''}" onclick="setLang('hi');settingsSheet()">हिन्दी</button></div></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('sound')}</label><input type="checkbox" class="sw" ${pref('sound')?'checked':''} onchange="cfg.sound=this.checked;saveCfg()"></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('voice')}</label><input type="checkbox" class="sw" ${pref('voice')?'checked':''} onchange="cfg.voice=this.checked;saveCfg()"></div>
-   <div class="frow"><label class="grow" style="min-width:0">${t('alNotify')}</label><input type="checkbox" class="sw" ${pref('notify')?'checked':''} onchange="cfg.notify=this.checked;saveCfg();if(this.checked)askNotify().then(()=>pushEnable());else pushOff()"></div>
+   <div class="frow"><label class="grow" style="min-width:0">${t('alNotify')}</label><input type="checkbox" class="sw" ${pref('notify')?'checked':''} onchange="cfg.notify=this.checked;saveCfg();if(this.checked)askNotify().then(()=>pushEnable(true));else pushOff()"></div>
    <button class="lrow" onclick="unlockAudio();chime('in');setTimeout(()=>speak(t('sIn',{n:'Suraj'})),350)"><span class="grow">${t('test')}</span>${ic('chR',18)}</button>
    <button class="lrow" onclick="pinSheet()"><span class="grow">${t('pin')}</span><span class="sub">${cfg.pin?'••••':t('pinNone')}</span>${ic('chR',18)}</button>
    <button class="lrow" onclick="syncAll();toast(t('syncNow'))"><span class="grow">${t('syncNow')}</span>${ic('refresh',18)}</button>
