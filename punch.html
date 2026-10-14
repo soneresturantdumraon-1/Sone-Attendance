@@ -191,6 +191,7 @@ const durMin=(a,b)=>{let d=hmToMin(b)-hmToMin(a);if(d<0)d+=1440;return d};
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let lang=LS.get(PREFIX+'_lang','en');
 function t(k,o){let v=(I[lang]&&I[lang][k])||I.en[k]||k;if(o)for(const x in o)v=v.split('{'+x+'}').join(o[x]);return v}
+function tg(k,o,g){let v=(I[lang]&&I[lang][k])||I.en[k]||k;if(lang==='hi'&&g==='F')v=v.split('गए').join('गईं').split('आए').join('आईं').split('रहे').join('रहीं');if(o)for(const x in o)v=v.split('{'+x+'}').join(o[x]);return v}
 function setLang(l){lang=l;LS.set(PREFIX+'_lang',l);document.documentElement.lang=l;if(typeof render==='function')render()}
 const fmtDur=n=>{const a=Math.floor(n/60),b=n%60;return (a?a+t('hrS')+' ':'')+b+t('minS')};
 let cfg=LS.get(PREFIX+'_cfg',{});
@@ -282,7 +283,7 @@ async function pushCall(path,o){if(!cfg.session)throw new Error('no session');re
 const PUSH_WANT=()=>pref('notify');
 
 /* ---------- Web Push: notification even when the app is closed ---------- */
-const PUSH_KEY=(window.SB&&window.SB.vapid)||'';
+const PUSH_KEY=(window.SB&&window.SB.vapid)||'BCAD7Hz6gAygJLkqfCsFX9eDju60knacxv9G9pdeBHplL_1JQ2Nl8jfmV59Imm0C6QYs2qgfWuhpN8cOQqaqfdE';
 const pushOn=()=>{try{return localStorage.getItem('push_on')==='1'}catch(e){return false}};
 const pushSet=v=>{try{localStorage.setItem('push_on',v?'1':'0')}catch(e){}};
 function pushKey(s){const p='='.repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(r,c=>c.charCodeAt(0))}
@@ -308,10 +309,10 @@ addEventListener('load',()=>setTimeout(()=>{try{if(PUSH_KEY&&('Notification' in 
 
 async function askNotify(){try{if(!('Notification' in window))return;if(Notification.permission==='default')await Notification.requestPermission();if(Notification.permission==='denied')toast(t('alDenied'))}catch(e){}}
 function alertMsg(ev){
-  const n=(S.faces[ev.sid]||{}).name||'—',tm=ev.time?fmtT(ev.time):'';
+  const fc=S.faces[ev.sid]||{},n=fc.name||'—',g=fc.g,tm=ev.time?fmtT(ev.time):'';
   if(ev.t==='in')return{text:t('tIn',{n,t:tm}),say:t('rIn',{n}),icon:'check',col:'#34c759'};
-  if(ev.t==='out')return{text:t('tOut',{n,t:tm}),say:t('rOut',{n}),icon:'out',col:'#ff9500'};
-  return{text:t('tBack',{n,d:fmtDur(ev.dur||0)}),say:t('rBack',{n,d:durWords(ev.dur||0)}),icon:'chL',col:'#007aff'};
+  if(ev.t==='out')return{text:tg('tOut',{n,t:tm},g),say:tg('rOut',{n},g),icon:'out',col:'#ff9500'};
+  return{text:tg('tBack',{n,d:fmtDur(ev.dur||0)},g),say:tg('rBack',{n,d:durWords(ev.dur||0)},g),icon:'chL',col:'#007aff'};
 }
 function showAlertBar(m){
   const d=document.createElement('div');d.className='alertbar';d.innerHTML=`<div class="ai" style="background:${m.col}">${ic(m.icon,20)}</div><div><b>${esc(biz.name)}</b><span>${esc(m.text)}</span></div>`;
@@ -424,7 +425,7 @@ function setK(st,sid,x){
   kState=st;let cls='',h='';
   const f=sid?faceOf(sid):null,n=f?esc(f.name):'';
   if(st==='in'||st==='already'){cls=st==='in'?'ok':'warn';h=`${av(f.name,f.photo,60)}<div style="text-align:left"><div class="kt">${t('welcome',{n})}</div><div>${t(st==='in'?'kIn':'kAlready',{t:fmtT(x)})}</div></div>`}
-  else if(st==='out'||st==='back'){cls='ok';h=`${av(f.name,f.photo,60)}<div style="text-align:left"><div class="kt">${st==='out'?t('kOut',{n,t:fmtT(x)}):t('kBack',{n,d:x})}</div></div>`}
+  else if(st==='out'||st==='back'){cls='ok';h=`${av(f.name,f.photo,60)}<div style="text-align:left"><div class="kt">${st==='out'?tg('kOut',{n,t:fmtT(x)},f.g):tg('kBack',{n,d:x},f.g)}</div></div>`}
   else if(st==='notin'||st==='recent'){cls='warn';h=`${av(f.name,f.photo,60)}<div style="text-align:left;font-weight:600">${t(st==='notin'?'kNotIn':'kRecent',{n})}</div>`}
   else if(st==='unknown'){cls='bad';h=`<div class="kt">${t('unknown')}</div>`}
   else if(st==='noengine'){cls='warn';h=`<div><div>${t('noEngine')}</div><button class="btn pri" style="margin-top:10px" onclick="retryEngine()">${t('retry')}</button></div>`}
@@ -495,8 +496,8 @@ function handleMatch(sid){
   const f=faceOf(sid),r=mode==='in'?punchIn(sid):punchOutIn(sid);
   if(r.st==='in'){setK('in',sid,r.time);chime('in');setTimeout(()=>speak(t('sIn',{n:f.name})),350)}
   else if(r.st==='already')setK('already',sid,r.time);
-  else if(r.st==='out'){setK('out',sid,r.time);chime('out');setTimeout(()=>speak(t('sOut',{n:f.name})),350)}
-  else if(r.st==='back'){setK('back',sid,fmtDur(r.dur));chime('back');setTimeout(()=>speak(t('sBack',{n:f.name,d:durWords(r.dur)})),350)}
+  else if(r.st==='out'){setK('out',sid,r.time);chime('out');setTimeout(()=>speak(tg('sOut',{n:f.name},f.g)),350)}
+  else if(r.st==='back'){setK('back',sid,fmtDur(r.dur));chime('back');setTimeout(()=>speak(tg('sBack',{n:f.name,d:durWords(r.dur)},f.g)),350)}
   else setK(r.st,sid);
   updList();
 }

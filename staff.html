@@ -152,6 +152,7 @@ attendance:'हाज़िरी',lPresent:'उपस्थित',lHalf:'आ�
 outs:'बाहर / वापस',noOut:'इस माह कोई बाहर जाना नहीं',outNow:'अभी बाहर',since:'{t} से',updated:'अपडेट {t}',offline:'ऑफलाइन, सेव किया डेटा दिख रहा है',refresh:'रिफ्रेश',
 alertsSec:'अलर्ट',alNotify:'फोन नोटिफिकेशन',alSound:'आवाज़',alTest:'अलर्ट जाँचें',alDenied:'ब्राउज़र सेटिंग में नोटिफिकेशन बंद हैं',nAtt:'हाज़िरी दर्ज: {ty} ({d})',nTake:'निकासी दर्ज: {a} ({d})',nPaid:'वेतन दिया: {a} ({d})',nOut:'बाहर जाने का समय दर्ज: {t}',nBack:'{t} पर वापसी। {du} बाहर रहे',nMore:'+{n} और अपडेट',nTest:'यह एक जाँच अलर्ट है',duesAdv:'बकाया और अग्रिम',duesL:'बकाया (मिलना है)',advL:'अग्रिम (लौटाना है)',advTotal:'अब तक कुल लिया',advMonth:'इस माह लिया',duesNote:'{m} के अंत तक का हिसाब',loading:'लोड हो रहा है...',noAccess:'कोई डेटा नहीं मिला। हो सकता है आपका एक्सेस हटा दिया गया हो। मालिक से नया लिंक मांगें।',disconnect:'इस फ़ोन को डिसकनेक्ट करें',sure:'इस फ़ोन को स्टाफ ऐप से डिसकनेक्ट करें?',hrS:'घं',minS:'मि'}};
 const t=(k,o)=>{let v=(I[lang]&&I[lang][k])||I.en[k]||k;if(o)for(const x in o)v=v.split('{'+x+'}').join(o[x]);return v};
+const fem=s=>(lang==='hi'&&D&&D.staff&&D.staff.gender==='F')?s.split('रहे').join('रहीं'):s;
 const WS_={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],hi:['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि']};
 const MS_={en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],hi:['जन','फ़र','मार्च','अप्रै','मई','जून','जुल','अग','सित','अक्टू','नव','दिस']};
 const MF_={en:['January','February','March','April','May','June','July','August','September','October','November','December'],hi:['जनवरी','फ़रवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर']};
@@ -247,7 +248,7 @@ async function pushCall(path,o){if(!cfg.session)throw new Error('no session');re
 const PUSH_WANT=()=>al().notify;
 
 /* ---------- Web Push: notification even when the app is closed ---------- */
-const PUSH_KEY=(window.SB&&window.SB.vapid)||'';
+const PUSH_KEY=(window.SB&&window.SB.vapid)||'BCAD7Hz6gAygJLkqfCsFX9eDju60knacxv9G9pdeBHplL_1JQ2Nl8jfmV59Imm0C6QYs2qgfWuhpN8cOQqaqfdE';
 const pushOn=()=>{try{return localStorage.getItem('push_on')==='1'}catch(e){return false}};
 const pushSet=v=>{try{localStorage.setItem('push_on',v?'1':'0')}catch(e){}};
 function pushKey(s){const p='='.repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(r,c=>c.charCodeAt(0))}
@@ -288,7 +289,7 @@ function evMsg(e){
     return null;
   }
   if(!r.out)return null;
-  if(r.in)return{text:t('nBack',{t:fmtT(r.in),du:fmtDur(durMin(r.out,r.in))}),glyph:'↩',col:'#007aff',tag:'out'+r.id};
+  if(r.in)return{text:fem(t('nBack',{t:fmtT(r.in),du:fmtDur(durMin(r.out,r.in))})),glyph:'↩',col:'#007aff',tag:'out'+r.id};
   return{text:t('nOut',{t:fmtT(r.out)}),glyph:'↗',col:'#ff9500',tag:'out'+r.id};
 }
 function announce(evs){
