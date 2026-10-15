@@ -156,7 +156,7 @@ en:{cancel:'Cancel',close:'Close',save:'Save',hrS:'h',minS:'m',
  title:'Punch App',setupSub:'Attendance and Out / In for the door phone',url:'Project URL',key:'Public key',code:'Access code',connect:'Connect',connecting:'Connecting…',needAll:'Enter the URL, key and code',
  anonOff:'Anonymous sign-in is off. In Supabase open Authentication > Sign In / Providers and turn on "Allow anonymous sign-ins".',wrongCode:'This code is not for the Punch app. Ask the owner for a Punch app code.',
  setupHint:'Ask the owner to open the owner app > Settings > Team Apps > Punch app and send you the link.',
- modeIn:'Check-in',modeOut:'Out / In',look:'Look at the camera',loadingEngine:'Loading face engine…',noEngine:'Face matching is not active, so automatic check-in is unavailable.',retry:'Retry',
+ modeIn:'Check-in',modeOut:'Out / In',look:'Look at the camera',blink:'Blink once to check in',live:'Blink check',pinLocked:'Too many tries. Wait {s}s',loadingEngine:'Loading face engine…',noEngine:'Face matching is not active, so automatic check-in is unavailable.',retry:'Retry',
  camErr:'Camera is not available. Allow camera access and try again.',insecure:'This page must be opened from a secure https link for the camera to work.',noFaces:'No staff face is registered yet. The owner must register faces in the owner app.',unknown:'Face not recognised',
  welcome:'Welcome, {n}',kIn:'Checked in at {t}',kAlready:'Already checked in at {t}',kOut:'{n} - out at {t}',kBack:'Welcome back, {n} - {d} outside',kNotIn:'{n} has not checked in today',kRecent:'{n} - recorded a moment ago',
  sIn:'{n}, you are checked in',sOut:'{n}, out time recorded',sBack:'Welcome back {n}. You were outside for {d}',
@@ -168,7 +168,7 @@ hi:{cancel:'रद्द करें',close:'बंद करें',save:'स�
  title:'पंच ऐप',setupSub:'दरवाज़े वाले फोन के लिए हाज़िरी और बाहर / वापसी',url:'प्रोजेक्ट URL',key:'पब्लिक की',code:'एक्सेस कोड',connect:'जोड़ें',connecting:'जुड़ रहा है…',needAll:'URL, की और कोड भरें',
  anonOff:'अनाम साइन-इन बंद है। Supabase में Authentication > Sign In / Providers खोलकर "Allow anonymous sign-ins" चालू करें।',wrongCode:'यह कोड पंच ऐप का नहीं है। मालिक से पंच ऐप का कोड माँगें।',
  setupHint:'मालिक से कहें: ओनर ऐप > सेटिंग्स > टीम ऐप्स > पंच ऐप खोलकर लिंक भेजें।',
- modeIn:'हाज़िरी',modeOut:'बाहर / वापसी',look:'कैमरे की ओर देखें',loadingEngine:'फेस इंजन लोड हो रहा है…',noEngine:'चेहरा मिलान चालू नहीं है, इसलिए अपने-आप हाज़िरी उपलब्ध नहीं।',retry:'फिर कोशिश करें',
+ modeIn:'हाज़िरी',modeOut:'बाहर / वापसी',look:'कैमरे की ओर देखें',blink:'हाज़िरी के लिए एक बार पलक झपकाएँ',live:'पलक जाँच',pinLocked:'बहुत ग़लत कोशिशें। {s} सेकंड रुकें',loadingEngine:'फेस इंजन लोड हो रहा है…',noEngine:'चेहरा मिलान चालू नहीं है, इसलिए अपने-आप हाज़िरी उपलब्ध नहीं।',retry:'फिर कोशिश करें',
  camErr:'कैमरा उपलब्ध नहीं। कैमरे की अनुमति दें और फिर कोशिश करें।',insecure:'कैमरा चलाने के लिए यह पेज https लिंक से खुलना चाहिए।',noFaces:'अभी किसी स्टाफ का चेहरा रजिस्टर नहीं है। मालिक ओनर ऐप में चेहरे रजिस्टर करें।',unknown:'चेहरा पहचाना नहीं गया',
  welcome:'स्वागत है, {n}',kIn:'{t} पर हाज़िरी लगी',kAlready:'{t} पर पहले ही हाज़िरी लग चुकी है',kOut:'{n} - {t} पर बाहर गए',kBack:'वापसी पर स्वागत, {n} - {d} बाहर रहे',kNotIn:'{n} की आज हाज़िरी नहीं लगी',kRecent:'{n} - अभी दर्ज हो चुका है',
  sIn:'{n}, आपकी हाज़िरी लग गई',sOut:'{n}, बाहर जाने का समय दर्ज हुआ',sBack:'वापसी पर स्वागत {n}। आप {d} बाहर रहे',
@@ -424,13 +424,14 @@ let mode='in',kState='',kRev=null,kBusy=false,kLast={sid:null,n:0},kUnk=0,kCool=
 const tagCls=st=>st==='in'||st==='back'||st==='out'?'ok':'warn';
 function setK(st,sid,x){
   const el=$('#kcard');if(!el)return;
-  if(st===kState&&['look','loading','noengine','nofaces'].includes(st))return;
+  if(st===kState&&['look','loading','noengine','nofaces','blink'].includes(st))return;
   kState=st;let cls='',h='';
   const f=sid?faceOf(sid):null,n=f?esc(f.name):'';
   if(st==='in'||st==='already'){cls=st==='in'?'ok':'warn';h=`${av(f.name,f.photo,60)}<div style="text-align:left"><div class="kt">${t('welcome',{n})}</div><div>${t(st==='in'?'kIn':'kAlready',{t:fmtT(x)})}</div></div>`}
   else if(st==='out'||st==='back'){cls='ok';h=`${av(f.name,f.photo,60)}<div style="text-align:left"><div class="kt">${st==='out'?tg('kOut',{n,t:fmtT(x)},f.g):tg('kBack',{n,d:x},f.g)}</div></div>`}
   else if(st==='notin'||st==='recent'){cls='warn';h=`${av(f.name,f.photo,60)}<div style="text-align:left;font-weight:600">${t(st==='notin'?'kNotIn':'kRecent',{n})}</div>`}
   else if(st==='unknown'){cls='bad';h=`<div class="kt">${t('unknown')}</div>`}
+  else if(st==='blink'){cls='warn';h=`<div class="kt">${t('blink')}</div>`}
   else if(st==='noengine'){cls='warn';h=`<div><div>${t('noEngine')}</div><button class="btn pri" style="margin-top:10px" onclick="retryEngine()">${t('retry')}</button></div>`}
   else if(st==='nofaces'){cls='warn';h=`<div>${t('noFaces')}</div>`}
   else if(st==='cam'||st==='insecure'){cls='bad';h=`<div><div>${t(st==='cam'?'camErr':'insecure')}</div>${st==='cam'?`<button class="btn pri" style="margin-top:10px" onclick="startCam()">${t('retry')}</button>`:''}</div>`}
@@ -490,9 +491,24 @@ async function loop(){
     withFace.forEach(f=>{const x=faceapi.euclideanDistance(det.descriptor,f.desc);if(x<best){best=x;m=f}});
     if(m&&best<=0.45){
       kUnk=0;if(kLast.sid===m.id)kLast.n++;else kLast={sid:m.id,n:1};
-      if(kLast.n>=2){kLast={sid:null,n:0};handleMatch(m.id)}
+      if(kLast.n>=2){kLast={sid:null,n:0};if(cfg.live===false)handleMatch(m.id);else await liveCheck(v,m)}
     }else{kLast={sid:null,n:0};kUnk++;if(kUnk>=3){kUnk=0;kCool=Date.now()+2500;setK('unknown')}}
   }catch(e){}finally{kBusy=false}
+}
+const earOf=p=>{const d=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);return(d(p[1],p[5])+d(p[2],p[4]))/(2*d(p[0],p[3]))};
+async function liveCheck(v,m){
+  setK('blink');
+  const opt=new faceapi.TinyFaceDetectorOptions(),end=Date.now()+5000;let open=false,closed=false,ok=false;
+  while(Date.now()<end){
+    const d=await faceapi.detectSingleFace(v,opt).withFaceLandmarks();
+    if(d){const l=d.landmarks,e=(earOf(l.getLeftEye())+earOf(l.getRightEye()))/2;
+      if(e>0.26){if(closed){ok=true;break}open=true}else if(e<0.2&&open)closed=true}
+    await new Promise(r=>setTimeout(r,60));
+  }
+  kCool=Date.now()+1500;
+  if(ok){const f=await faceapi.detectSingleFace(v,opt).withFaceLandmarks().withFaceDescriptor();
+    if(f&&faceapi.euclideanDistance(f.descriptor,m.desc)<=0.45){handleMatch(m.id);return}}
+  kState='';setK('look');
 }
 function handleMatch(sid){
   kCool=Date.now()+4000;
@@ -521,10 +537,31 @@ async function doConnect(){
   catch(e){m.textContent=e.message;b.disabled=false;b.textContent=t('connect')}
 }
 /* ---------- settings (PIN protected) ---------- */
+const hasPin=()=>!!(cfg.pinH||cfg.pin);
+const rndHex=()=>Array.from(crypto.getRandomValues(new Uint8Array(8))).map(x=>x.toString(16).padStart(2,'0')).join('');
+async function pinHash(p,salt){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+p));return Array.from(new Uint8Array(d)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function pinSave(p){cfg.pinS=rndHex();cfg.pinH=await pinHash(p,cfg.pinS);delete cfg.pin;saveCfg()}
+function pinClear(){delete cfg.pin;delete cfg.pinH;delete cfg.pinS;cfg.pinF=0;cfg.pinL=0;saveCfg()}
+async function pinOk(p){
+  if(cfg.pinH)return(await pinHash(p,cfg.pinS))===cfg.pinH;
+  if(cfg.pin&&p===cfg.pin){await pinSave(p);return true}
+  return false;
+}
 function openSettings(){
-  if(!cfg.pin){settingsSheet();return}
+  if(!hasPin()){settingsSheet();return}
   sheet(t('pinEnter'),`<div style="padding:20px 0 6px"><input class="big" id="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••"></div><div id="pm" class="foot" style="text-align:center;color:var(--red)"></div>`,{});
-  const i=$('#pin');i.focus();i.oninput=()=>{if(i.value.length===4){if(i.value===cfg.pin)settingsSheet();else{$('#pm').textContent=t('pinWrong');i.value=''}}};
+  const i=$('#pin');i.focus();
+  i.oninput=async()=>{
+    if(i.value.length!==4)return;
+    const w=Math.ceil(((cfg.pinL||0)-Date.now())/1000);
+    if(w>0){$('#pm').textContent=t('pinLocked',{s:w});i.value='';return}
+    if(await pinOk(i.value)){cfg.pinF=0;saveCfg();settingsSheet();return}
+    cfg.pinF=(cfg.pinF||0)+1;
+    if(cfg.pinF%5===0)cfg.pinL=Date.now()+Math.min(300,30*Math.pow(2,cfg.pinF/5-1))*1000;
+    saveCfg();
+    const w2=Math.ceil(((cfg.pinL||0)-Date.now())/1000);
+    $('#pm').textContent=w2>0?t('pinLocked',{s:w2}):t('pinWrong');i.value='';
+  };
 }
 function settingsSheet(){
   const host=(()=>{try{return new URL(cfg.url).host}catch(e){return cfg.url}})();
@@ -532,16 +569,17 @@ function settingsSheet(){
    <div class="frow"><label>${t('language')}</label><div class="seg" style="margin:0;width:190px"><button class="${lang==='en'?'on':''}" onclick="setLang('en');settingsSheet()">English</button><button class="${lang==='hi'?'on':''}" onclick="setLang('hi');settingsSheet()">हिन्दी</button></div></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('sound')}</label><input type="checkbox" class="sw" ${pref('sound')?'checked':''} onchange="cfg.sound=this.checked;saveCfg()"></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('voice')}</label><input type="checkbox" class="sw" ${pref('voice')?'checked':''} onchange="cfg.voice=this.checked;saveCfg()"></div>
+   <div class="frow"><label class="grow" style="min-width:0">${t('live')}</label><input type="checkbox" class="sw" ${cfg.live!==false?'checked':''} onchange="cfg.live=this.checked;saveCfg()"></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('alNotify')}</label><input type="checkbox" class="sw" ${pref('notify')?'checked':''} onchange="cfg.notify=this.checked;saveCfg();if(this.checked)askNotify().then(()=>pushEnable(true));else pushOff()"></div>
    <button class="lrow" onclick="unlockAudio();chime('in');setTimeout(()=>speak(t('sIn',{n:'Suraj'})),350)"><span class="grow">${t('test')}</span>${ic('chR',18)}</button>
-   <button class="lrow" onclick="pinSheet()"><span class="grow">${t('pin')}</span><span class="sub">${cfg.pin?'••••':t('pinNone')}</span>${ic('chR',18)}</button>
+   <button class="lrow" onclick="pinSheet()"><span class="grow">${t('pin')}</span><span class="sub">${hasPin()?'••••':t('pinNone')}</span>${ic('chR',18)}</button>
    <button class="lrow" onclick="syncAll();toast(t('syncNow'))"><span class="grow">${t('syncNow')}</span>${ic('refresh',18)}</button>
    <button class="lrow" onclick="window.resetApp()"><span class="grow">${t('refreshApp')}</span>${ic('chR',18)}</button></div>
    <div class="list" style="padding:0 14px"><div class="irow"><span>${t('connectedTo')}</span><b class="sub" style="font-weight:400">${esc(host)}</b></div><div class="irow"><span>${t('lastSync')}</span><b class="sub" style="font-weight:400">${lastSync?fmtT(new Date(lastSync).toTimeString().slice(0,5)):t('never')}</b></div><div class="irow"><span>${t('version')}</span><b class="sub" style="font-weight:400">${APP_BUILD}</b></div></div>
    <button class="btn red" style="width:100%" onclick="disconnectAsk()">${t('disconnect')}</button>`,{left:t('close')});
 }
 function pinSheet(){
-  sheet(t('pin'),`<div class="foot" style="text-align:center;margin:0 0 6px">${t('pinSet')}</div><div style="padding:6px 0"><input class="big" id="np" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••"></div>${cfg.pin?`<button class="btn tint" style="width:100%" onclick="cfg.pin=null;saveCfg();settingsSheet()">${t('pinRemove')}</button>`:''}`,{left:t('cancel'),right:t('save'),onRight:()=>{const v=$('#np').value;if(!/^\d{4}$/.test(v)){toast(t('pinSet'));return}cfg.pin=v;saveCfg();toast(t('pinSaved'));settingsSheet()}});
+  sheet(t('pin'),`<div class="foot" style="text-align:center;margin:0 0 6px">${t('pinSet')}</div><div style="padding:6px 0"><input class="big" id="np" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••"></div>${hasPin()?`<button class="btn tint" style="width:100%" onclick="pinClear();settingsSheet()">${t('pinRemove')}</button>`:''}`,{left:t('cancel'),right:t('save'),onRight:async()=>{const v=$('#np').value;if(!/^\d{4}$/.test(v)){toast(t('pinSet'));return}await pinSave(v);toast(t('pinSaved'));settingsSheet()}});
 }
 function disconnectAsk(){
   sheet(t('disconnectQ'),`<div class="foot" style="text-align:center">${t('disconnectMsg')}</div><div class="acts" style="display:flex;gap:10px"><button class="btn red grow" onclick="disconnect()">${t('yes')}</button><button class="btn tint grow" onclick="closeSheet()">${t('cancel')}</button></div>`,{left:false});
