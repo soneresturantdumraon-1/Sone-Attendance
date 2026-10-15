@@ -156,7 +156,7 @@ en:{cancel:'Cancel',close:'Close',save:'Save',hrS:'h',minS:'m',
  title:'Punch App',setupSub:'Attendance and Out / In for the door phone',url:'Project URL',key:'Public key',code:'Access code',connect:'Connect',connecting:'Connecting…',needAll:'Enter the URL, key and code',
  anonOff:'Anonymous sign-in is off. In Supabase open Authentication > Sign In / Providers and turn on "Allow anonymous sign-ins".',wrongCode:'This code is not for the Punch app. Ask the owner for a Punch app code.',
  setupHint:'Ask the owner to open the owner app > Settings > Team Apps > Punch app and send you the link.',
- modeIn:'Check-in',modeOut:'Out / In',look:'Look at the camera',blink:'Blink once to check in',live:'Blink check',pinLocked:'Too many tries. Wait {s}s',loadingEngine:'Loading face engine…',noEngine:'Face matching is not active, so automatic check-in is unavailable.',retry:'Retry',
+ modeIn:'Check-in',modeOut:'Out / In',look:'Look at the camera',kOver:'{n} - duty time is over, check-in closed',tEnd:'{n} - duty ends in {m} min. Please mark attendance',sEnd:'{n}, your duty ends in {m} minutes. Please mark your attendance.',endAl:'Duty end alert',endOff:'Off',endMin:'{m} min',blink:'Blink once to check in',live:'Blink check',pinLocked:'Too many tries. Wait {s}s',loadingEngine:'Loading face engine…',noEngine:'Face matching is not active, so automatic check-in is unavailable.',retry:'Retry',
  camErr:'Camera is not available. Allow camera access and try again.',insecure:'This page must be opened from a secure https link for the camera to work.',noFaces:'No staff face is registered yet. The owner must register faces in the owner app.',unknown:'Face not recognised',
  welcome:'Welcome, {n}',kIn:'Checked in at {t}',kAlready:'Already checked in at {t}',kOut:'{n} - out at {t}',kBack:'Welcome back, {n} - {d} outside',kNotIn:'{n} has not checked in today',kRecent:'{n} - recorded a moment ago',
  sIn:'{n}, you are checked in',sOut:'{n}, out time recorded',sBack:'Welcome back {n}. You were outside for {d}',
@@ -168,7 +168,7 @@ hi:{cancel:'रद्द करें',close:'बंद करें',save:'स�
  title:'पंच ऐप',setupSub:'दरवाज़े वाले फोन के लिए हाज़िरी और बाहर / वापसी',url:'प्रोजेक्ट URL',key:'पब्लिक की',code:'एक्सेस कोड',connect:'जोड़ें',connecting:'जुड़ रहा है…',needAll:'URL, की और कोड भरें',
  anonOff:'अनाम साइन-इन बंद है। Supabase में Authentication > Sign In / Providers खोलकर "Allow anonymous sign-ins" चालू करें।',wrongCode:'यह कोड पंच ऐप का नहीं है। मालिक से पंच ऐप का कोड माँगें।',
  setupHint:'मालिक से कहें: ओनर ऐप > सेटिंग्स > टीम ऐप्स > पंच ऐप खोलकर लिंक भेजें।',
- modeIn:'हाज़िरी',modeOut:'बाहर / वापसी',look:'कैमरे की ओर देखें',blink:'हाज़िरी के लिए एक बार पलक झपकाएँ',live:'पलक जाँच',pinLocked:'बहुत ग़लत कोशिशें। {s} सेकंड रुकें',loadingEngine:'फेस इंजन लोड हो रहा है…',noEngine:'चेहरा मिलान चालू नहीं है, इसलिए अपने-आप हाज़िरी उपलब्ध नहीं।',retry:'फिर कोशिश करें',
+ modeIn:'हाज़िरी',modeOut:'बाहर / वापसी',look:'कैमरे की ओर देखें',kOver:'{n} - ड्यूटी का समय खत्म, हाज़िरी बंद',tEnd:'{n} - ड्यूटी {m} मिनट में खत्म होगी। हाज़िरी लगा लें',sEnd:'{n}, आपकी ड्यूटी {m} मिनट में खत्म होने वाली है। कृपया अपनी हाज़िरी लगा लीजिए।',endAl:'ड्यूटी खत्म अलर्ट',endOff:'बंद',endMin:'{m} मिनट',blink:'हाज़िरी के लिए एक बार पलक झपकाएँ',live:'पलक जाँच',pinLocked:'बहुत ग़लत कोशिशें। {s} सेकंड रुकें',loadingEngine:'फेस इंजन लोड हो रहा है…',noEngine:'चेहरा मिलान चालू नहीं है, इसलिए अपने-आप हाज़िरी उपलब्ध नहीं।',retry:'फिर कोशिश करें',
  camErr:'कैमरा उपलब्ध नहीं। कैमरे की अनुमति दें और फिर कोशिश करें।',insecure:'कैमरा चलाने के लिए यह पेज https लिंक से खुलना चाहिए।',noFaces:'अभी किसी स्टाफ का चेहरा रजिस्टर नहीं है। मालिक ओनर ऐप में चेहरे रजिस्टर करें।',unknown:'चेहरा पहचाना नहीं गया',
  welcome:'स्वागत है, {n}',kIn:'{t} पर हाज़िरी लगी',kAlready:'{t} पर पहले ही हाज़िरी लग चुकी है',kOut:'{n} - {t} पर बाहर गए',kBack:'वापसी पर स्वागत, {n} - {d} बाहर रहे',kNotIn:'{n} की आज हाज़िरी नहीं लगी',kRecent:'{n} - अभी दर्ज हो चुका है',
  sIn:'{n}, आपकी हाज़िरी लग गई',sOut:'{n}, बाहर जाने का समय दर्ज हुआ',sBack:'वापसी पर स्वागत {n}। आप {d} बाहर रहे',
@@ -335,6 +335,22 @@ function announce(evs){
   });
 }
 /* ---------- local state helpers ---------- */
+/* ---------- duty-end reminder: staff who have not marked attendance yet ---------- */
+const endAlertMin=()=>cfg.endAl==null?10:cfg.endAl;
+let endSeen=LS.get('punch_endal',{});
+function dutyEndTick(){
+  const N=endAlertMin();if(!N||!cfg.session||cfg.role!=='kiosk')return;
+  const hm=x=>{const q=String(x||'').split(':');return(+q[0]||0)*60+(+q[1]||0)},T=today(),now=hm(nowHM());
+  if(endSeen.d!==T){endSeen={d:T,s:{}};LS.set('punch_endal',endSeen)}
+  const f=Object.values(S.faces).find(f=>{
+    if(!f||!f.id||!f.ds||!f.de||hm(f.de)<=hm(f.ds)||endSeen.s[f.id]||S.att[f.id])return false;
+    const left=hm(f.de)-now;return left>0&&left<=N;
+  });
+  if(!f)return;
+  endSeen.s[f.id]=1;LS.set('punch_endal',endSeen);
+  const left=hm(f.de)-now,m={text:t('tEnd',{n:f.name,m:left}),say:t('sEnd',{n:f.name,m:left}),icon:'out',col:'#ff9500'};
+  showAlertBar(m);chime('out');setTimeout(()=>speak(m.say),350);osNotify(m,{sid:f.id,t:'end'});
+}
 function prune(){const T=today();Object.keys(S.att).forEach(k=>{if(S.att[k].date!==T)delete S.att[k]});Object.keys(S.outs).forEach(k=>{if(S.outs[k].date!==T)delete S.outs[k]})}
 const faceOf=sid=>S.faces[sid]||{id:sid,name:'?',photo:null};
 const openOut=sid=>Object.values(S.outs).find(o=>o.sid===sid&&o.date===today()&&!o.in);
@@ -344,6 +360,8 @@ let lockUntil={};
 function punchIn(sid){
   const a=S.att[sid];
   if(a&&(a.type==='P'||a.type==='H'))return{st:'already',time:a.time};
+  const fc=S.faces[sid],hmn=x=>{const q=String(x||'').split(':');return(+q[0]||0)*60+(+q[1]||0)};
+  if(fc&&fc.ds&&fc.de&&hmn(fc.de)>hmn(fc.ds)&&hmn(nowHM())>=hmn(fc.de))return{st:'over'};
   const tm=nowHM(),id=a?a.id:uid(),data={id,sid,date:today(),type:'P',time:tm,src:'punch'};
   S.att[sid]=data;queueRow({id,kind:'att',sid,data,deleted:false});return{st:'in',time:tm};
 }
@@ -430,6 +448,7 @@ function setK(st,sid,x){
   if(st==='in'||st==='already'){cls=st==='in'?'ok':'warn';h=`${av(f.name,f.photo,60)}<div style="text-align:left"><div class="kt">${t('welcome',{n})}</div><div>${t(st==='in'?'kIn':'kAlready',{t:fmtT(x)})}</div></div>`}
   else if(st==='out'||st==='back'){cls='ok';h=`${av(f.name,f.photo,60)}<div style="text-align:left"><div class="kt">${st==='out'?tg('kOut',{n,t:fmtT(x)},f.g):tg('kBack',{n,d:x},f.g)}</div></div>`}
   else if(st==='notin'||st==='recent'){cls='warn';h=`${av(f.name,f.photo,60)}<div style="text-align:left;font-weight:600">${t(st==='notin'?'kNotIn':'kRecent',{n})}</div>`}
+  else if(st==='over'){cls='bad';h=`${av(f.name,f.photo,60)}<div style="text-align:left;font-weight:600">${t('kOver',{n})}</div>`}
   else if(st==='unknown'){cls='bad';h=`<div class="kt">${t('unknown')}</div>`}
   else if(st==='blink'){cls='warn';h=`<div class="kt">${t('blink')}</div>`}
   else if(st==='noengine'){cls='warn';h=`<div><div>${t('noEngine')}</div><button class="btn pri" style="margin-top:10px" onclick="retryEngine()">${t('retry')}</button></div>`}
@@ -437,7 +456,7 @@ function setK(st,sid,x){
   else if(st==='cam'||st==='insecure'){cls='bad';h=`<div><div>${t(st==='cam'?'camErr':'insecure')}</div>${st==='cam'?`<button class="btn pri" style="margin-top:10px" onclick="startCam()">${t('retry')}</button>`:''}</div>`}
   else h=`<div class="kt">${st==='loading'?t('loadingEngine'):t('look')}</div>`;
   el.className='k-card '+cls;el.innerHTML=h;
-  clearTimeout(kRev);if(['in','already','out','back','notin','recent','unknown'].includes(st))kRev=setTimeout(()=>{kState='';setK('look')},3800);
+  clearTimeout(kRev);if(['in','already','out','back','notin','recent','unknown','over'].includes(st))kRev=setTimeout(()=>{kState='';setK('look')},3800);
 }
 function retryEngine(){faceState='loading';kState='';setK('loading');initFace()}
 function updClock(){const e=$('#clk');if(e)e.innerHTML='<b>'+fmtT(nowHM())+'</b>'}
@@ -486,7 +505,7 @@ async function loop(){
   kBusy=true;
   try{
     const det=await faceapi.detectSingleFace(v,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
-    if(!det){kLast={sid:null,n:0};kUnk=0;if(!['in','already','out','back','notin','recent','unknown'].includes(kState))setK('look');return}
+    if(!det){kLast={sid:null,n:0};kUnk=0;if(!['in','already','out','back','notin','recent','unknown','over'].includes(kState))setK('look');return}
     let m=null,best=9;
     withFace.forEach(f=>{const x=faceapi.euclideanDistance(det.descriptor,f.desc);if(x<best){best=x;m=f}});
     if(m&&best<=0.45){
@@ -569,6 +588,7 @@ function settingsSheet(){
    <div class="frow"><label>${t('language')}</label><div class="seg" style="margin:0;width:190px"><button class="${lang==='en'?'on':''}" onclick="setLang('en');settingsSheet()">English</button><button class="${lang==='hi'?'on':''}" onclick="setLang('hi');settingsSheet()">हिन्दी</button></div></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('sound')}</label><input type="checkbox" class="sw" ${pref('sound')?'checked':''} onchange="cfg.sound=this.checked;saveCfg()"></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('voice')}</label><input type="checkbox" class="sw" ${pref('voice')?'checked':''} onchange="cfg.voice=this.checked;saveCfg()"></div>
+   <div class="frow"><label class="grow" style="min-width:0">${t('endAl')}</label><div class="seg" style="margin:0;width:190px">${[0,5,10].map(v=>`<button class="${endAlertMin()===v?'on':''}" onclick="cfg.endAl=${v};saveCfg();settingsSheet()">${v?t('endMin',{m:v}):t('endOff')}</button>`).join('')}</div></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('live')}</label><input type="checkbox" class="sw" ${cfg.live!==false?'checked':''} onchange="cfg.live=this.checked;saveCfg()"></div>
    <div class="frow"><label class="grow" style="min-width:0">${t('alNotify')}</label><input type="checkbox" class="sw" ${pref('notify')?'checked':''} onchange="cfg.notify=this.checked;saveCfg();if(this.checked)askNotify().then(()=>pushEnable(true));else pushOff()"></div>
    <button class="lrow" onclick="unlockAudio();chime('in');setTimeout(()=>speak(t('sIn',{n:'Suraj'})),350)"><span class="grow">${t('test')}</span>${ic('chR',18)}</button>
@@ -595,7 +615,7 @@ document.documentElement.setAttribute('data-theme','dark');
 function bootError(e){const a=$('#app');a.setAttribute('data-ready','1');a.innerHTML=`<div class="card" style="margin:20px"><b>${esc(e&&e.message||e)}</b><button class="btn pri" style="width:100%;margin-top:12px" onclick="window.resetApp()">Refresh app</button></div>`}
 try{
   document.documentElement.lang=lang;prune();render();initFace();
-  timers.push(setInterval(updClock,1000),setInterval(loop,1200),setInterval(syncAll,8000),setInterval(()=>{prune()},60000));
+  timers.push(setInterval(updClock,1000),setInterval(loop,1200),setInterval(syncAll,8000),setInterval(()=>{prune()},60000),setInterval(dutyEndTick,15000));
   if(cfg.session)syncAll();
   try{if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 }catch(e){bootError(e)}

@@ -141,7 +141,7 @@ salary:'Monthly Salary',bonus:'No-leave bonus',prorated:'Pro-rated from {d}',ded
 remaining:'Remaining',overdrawn:'Overdrawn (advance)',dueOn:'Salary due on',held:'Salary not payable yet. Due on {d}.',onTrack:'On track for a {a} bonus',
 attendance:'Attendance',lPresent:'Present',lHalf:'Half',lLeave:'Leave',lAbsent:'Absent',money:'Money received',noTx:'No money received this month',cash:'Cash',online:'Online',wd:'Received',paid:'Salary received',
 outs:'Out / In',noOut:'No outings this month',outNow:'Out now',since:'since {t}',updated:'Updated {t}',offline:'Offline, showing saved data',refresh:'Refresh',
-alertsSec:'Alerts',alNotify:'Phone notification',alSound:'Sound',alTest:'Test alert',alDenied:'Notifications are blocked in the browser settings',nAtt:'Attendance marked: {ty} ({d})',nTake:'Money received: {a} ({d}){m}',nPaid:'Salary received: {a} ({d}){m}',nOut:'Out time recorded: {t}',nBack:'Back at {t}. Outside for {du}',nMore:'+{n} more updates',nTest:'This is a test alert',duesAdv:'Dues & Advance',duesL:'Dues (to receive)',advL:'Advance (to return)',advTotal:'Total received till now',advMonth:'Received this month',duesNote:'Balance as of end of {m}',loading:'Loading...',noAccess:'No data found. Your access may have been removed. Ask the owner for a new link.',disconnect:'Disconnect this phone',sure:'Disconnect this phone from the Staff app?',hrS:'h',minS:'m'},
+alertsSec:'Alerts',alNotify:'Phone notification',alSound:'Sound',alTest:'Test alert',alDenied:'Notifications are blocked in the browser settings',nAtt:'Attendance marked: {ty} ({d})',pendLbl:'Not in yet',dutyOutN:'Duty out recorded: {t}',lateByS:'Late {m}',onTimeS:'On time',workedS:'Worked {d}',outAtS:'Out {t}',nTake:'Money received: {a} ({d}){m}',nPaid:'Salary received: {a} ({d}){m}',nOut:'Out time recorded: {t}',nBack:'Back at {t}. Outside for {du}',nMore:'+{n} more updates',nTest:'This is a test alert',duesAdv:'Dues & Advance',duesL:'Dues (to receive)',advL:'Advance (to return)',advTotal:'Total received till now',advMonth:'Received this month',duesNote:'Balance as of end of {m}',loading:'Loading...',noAccess:'No data found. Your access may have been removed. Ask the owner for a new link.',disconnect:'Disconnect this phone',sure:'Disconnect this phone from the Staff app?',hrS:'h',minS:'m'},
 hi:{
 title:'स्टाफ ऐप',setupSub:'अपनी हाज़िरी, वेतन और हिसाब देखें',url:'प्रोजेक्ट URL',key:'पब्लिक की',code:'एक्सेस कोड',connect:'कनेक्ट करें',fill:'URL, की और कोड भरें।',
 anonOff:'Anonymous sign-in बंद है। Supabase में Authentication > Sign In / Providers में "Allow anonymous sign-ins" चालू करें।',wrongCode:'यह कोड स्टाफ ऐप का नहीं है।',askOwner:'मालिक से अपना लिंक मांगें: स्टाफ पेज > Staff App Access।',
@@ -150,7 +150,7 @@ salary:'मासिक वेतन',bonus:'बिना छुट्टी ब
 remaining:'शेष',overdrawn:'अधिक लिया (अग्रिम)',dueOn:'वेतन देय',held:'वेतन अभी देय नहीं। देय तिथि {d}।',onTrack:'{a} बोनस की राह पर',
 attendance:'हाज़िरी',lPresent:'उपस्थित',lHalf:'आधा',lLeave:'छुट्टी',lAbsent:'अनुपस्थित',money:'मिला हुआ पैसा',noTx:'इस माह कोई पैसा नहीं मिला',cash:'नकद',online:'ऑनलाइन',wd:'मिला',paid:'वेतन मिला',
 outs:'बाहर / वापस',noOut:'इस माह कोई बाहर जाना नहीं',outNow:'अभी बाहर',since:'{t} से',updated:'अपडेट {t}',offline:'ऑफलाइन, सेव किया डेटा दिख रहा है',refresh:'रिफ्रेश',
-alertsSec:'अलर्ट',alNotify:'फोन नोटिफिकेशन',alSound:'आवाज़',alTest:'अलर्ट जाँचें',alDenied:'ब्राउज़र सेटिंग में नोटिफिकेशन बंद हैं',nAtt:'हाज़िरी दर्ज: {ty} ({d})',nTake:'पैसे मिले: {a} ({d}){m}',nPaid:'वेतन मिला: {a} ({d}){m}',nOut:'बाहर जाने का समय दर्ज: {t}',nBack:'{t} पर वापसी। {du} बाहर रहे',nMore:'+{n} और अपडेट',nTest:'यह एक जाँच अलर्ट है',duesAdv:'बकाया और अग्रिम',duesL:'बकाया (मिलना है)',advL:'अग्रिम (लौटाना है)',advTotal:'अब तक कुल मिला',advMonth:'इस माह मिला',duesNote:'{m} के अंत तक का हिसाब',loading:'लोड हो रहा है...',noAccess:'कोई डेटा नहीं मिला। हो सकता है आपका एक्सेस हटा दिया गया हो। मालिक से नया लिंक मांगें।',disconnect:'इस फ़ोन को डिसकनेक्ट करें',sure:'इस फ़ोन को स्टाफ ऐप से डिसकनेक्ट करें?',hrS:'घं',minS:'मि'}};
+alertsSec:'अलर्ट',alNotify:'फोन नोटिफिकेशन',alSound:'आवाज़',alTest:'अलर्ट जाँचें',alDenied:'ब्राउज़र सेटिंग में नोटिफिकेशन बंद हैं',nAtt:'हाज़िरी दर्ज: {ty} ({d})',pendLbl:'अभी नहीं आए',dutyOutN:'ड्यूटी खत्म दर्ज: {t}',lateByS:'{m} देर',onTimeS:'समय पर',workedS:'काम किया {d}',outAtS:'बाहर {t}',nTake:'पैसे मिले: {a} ({d}){m}',nPaid:'वेतन मिला: {a} ({d}){m}',nOut:'बाहर जाने का समय दर्ज: {t}',nBack:'{t} पर वापसी। {du} बाहर रहे',nMore:'+{n} और अपडेट',nTest:'यह एक जाँच अलर्ट है',duesAdv:'बकाया और अग्रिम',duesL:'बकाया (मिलना है)',advL:'अग्रिम (लौटाना है)',advTotal:'अब तक कुल मिला',advMonth:'इस माह मिला',duesNote:'{m} के अंत तक का हिसाब',loading:'लोड हो रहा है...',noAccess:'कोई डेटा नहीं मिला। हो सकता है आपका एक्सेस हटा दिया गया हो। मालिक से नया लिंक मांगें।',disconnect:'इस फ़ोन को डिसकनेक्ट करें',sure:'इस फ़ोन को स्टाफ ऐप से डिसकनेक्ट करें?',hrS:'घं',minS:'मि'}};
 const t=(k,o)=>{let v=(I[lang]&&I[lang][k])||I.en[k]||k;if(o)for(const x in o)v=v.split('{'+x+'}').join(o[x]);return v};
 const fem=s=>(lang==='hi'&&D&&D.staff&&D.staff.gender==='F')?s.split('रहे').join('रहीं'):s;
 const WS_={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],hi:['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि']};
@@ -192,6 +192,18 @@ function cleanD(n){
   return o;
 }
 /* ---------- salary maths (same as the owner app) ---------- */
+const hmin=x=>{const a=String(x||'').split(':');return(+a[0]||0)*60+(+a[1]||0)};
+const nowM=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const dutyOK=s=>!!(s&&s.dutyStart&&s.dutyEnd&&hmin(s.dutyEnd)>hmin(s.dutyStart));
+const pendingDay=(s,d,has)=>d===today()&&!has&&dutyOK(s)&&nowM()<hmin(s.dutyEnd);
+function lateBy(s,a){if(!s||!s.dutyStart||!a||!a.time||(a.type!=='P'&&a.type!=='H'))return 0;const g=(s.lateGrace==null||s.lateGrace==='')?10:Number(s.lateGrace),d=hmin(a.time)-hmin(s.dutyStart);return d>g?d:0}
+function workedMin(s,a,d){
+  if(!a||!a.time||(a.type!=='P'&&a.type!=='H'))return 0;
+  const endT=a.out||((dutyOK(s)&&(d<today()||(d===today()&&nowM()>=hmin(s.dutyEnd))))?s.dutyEnd:'');
+  if(!endT)return 0;const e=hmin(endT),b=hmin(a.time);if(e<=b)return 0;let m=e-b;
+  D.out.filter(o=>o.date===d).forEach(o=>{const x=Math.max(hmin(o.out),b),y=o.in?Math.min(hmin(o.in),e):e;if(y>x)m-=y-x});
+  return m;
+}
 function monthNet(s,m){
   const dim=daysIn(m),first=m+'-01',last=m+'-'+pad(dim);
   const at=D.att.filter(a=>a.date.startsWith(m));
@@ -200,7 +212,7 @@ function monthNet(s,m){
   const taken=sumP(pays,'take'),settled=sumP(pays,'settle');
   const lm=s.left?s.left.slice(0,7):'',after=!!lm&&m>lm,leaving=lm===m,ld=leaving?parse(s.left).d:dim;
   let ded=0,absent=0;
-  if(s.cut&&!after){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const n=dayList(st,en).length;absent=Math.max(0,n-present-leave);ded=Math.floor(absent*Math.floor(s.salary/dim))}}
+  if(s.cut&&!after){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const n=dayList(st,en).length-(en===today()&&pendingDay(s,en,D.att.some(a=>a.date===en))?1:0);absent=Math.max(0,n-present-leave);ded=Math.floor(absent*Math.floor(s.salary/dim))}}
   const held=isHeld(s),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=(jm===m&&jd>1)||leaving;
   const fd=s.fullDays==null?34:s.fullDays,dRate=Math.floor(s.salary/dim);
   const isP=d=>at.some(a=>a.date===d&&a.type==='P');
@@ -279,13 +291,15 @@ const sigOf=r=>JSON.stringify([r.type,r.time,r.kind,r.amt,r.out,r.in,r.date,r.mo
 function diffEvs(o,n){
   if(!o||!o.at||!o.staff)return[];
   const from=dstr(new Date(Date.now()-2*864e5)),ev=[];
-  const cmp=(a,b,k)=>{const old={};a.forEach(x=>old[x.id]=x);b.forEach(x=>{const p=old[x.id];if(x.date>=from&&(!p||sigOf(p)!==sigOf(x)))ev.push({k,r:x})})};
+  const cmp=(a,b,k)=>{const old={};a.forEach(x=>old[x.id]=x);b.forEach(x=>{const p=old[x.id];if(x.date>=from&&(!p||sigOf(p)!==sigOf(x)))ev.push({k,r:x,p})})};
   cmp(o.att,n.att,'att');cmp(o.pay,n.pay,'pay');cmp(o.out,n.out,'out');
   return ev;
 }
 const mm=r=>r.mode?' · '+t(r.mode):'';
 function evMsg(e){
   const r=e.r;
+  if(e.k==='att'&&r.out&&(!e.p||e.p.out!==r.out))return{text:t('dutyOutN',{t:fmtT(r.out)}),glyph:'\u2705',col:'#34c759',tag:'att'+r.id+'o'};
+  if(e.k==='att'&&e.p&&e.p.out&&!r.out)return null;
   if(e.k==='att'){const ty={P:t('present'),H:t('half'),L:t('leave')}[r.type];return ty?{text:t('nAtt',{ty,d:fmtD(r.date)}),glyph:'✓',col:'#34c759',tag:'att'+r.id}:null}
   if(e.k==='pay'){
     if(r.kind==='take')return{text:t('nTake',{a:rs(r.amt),d:fmtD(r.date),m:mm(r)}),glyph:'₹',col:'#ff9500',tag:'pay'+r.id};
@@ -379,16 +393,21 @@ function mainHtml(){
   if(!month)month=today().slice(0,7);
   const c=calcM(s,month),T=today(),todayAtt=D.att.find(a=>a.date===T),over=c.bal<0;
   const ty=todayAtt?todayAtt.type:null;
+  const pend=!todayAtt&&pendingDay(s,T,false),dutyOver=!todayAtt&&!pend&&dutyOK(s)&&nowM()>=hmin(s.dutyEnd);
+  let tx='',tx2='';
+  if(todayAtt&&todayAtt.time){tx=fmtT(todayAtt.time);if(s.dutyStart&&(ty==='P'||ty==='H')){const l=lateBy(s,todayAtt);tx+=' \u00b7 '+(l?`<b class="r">${t('lateByS',{m:fmtDur(l)})}</b>`:`<b class="g">${t('onTimeS')}</b>`)}}
+  if(todayAtt&&todayAtt.out)tx2=t('outAtS',{t:fmtT(todayAtt.out)});
+  const wm=workedMin(s,todayAtt,T);if(wm>0)tx2+=(tx2?' \u00b7 ':'')+t('workedS',{d:fmtDur(wm)});
   const att={};D.att.forEach(a=>{att[a.date]=a});
   const dim=c.dim,first=new Date(+month.slice(0,4),+month.slice(5)-1,1).getDay();
   let cal=WS_[lang].map(w=>`<i>${w.slice(0,3)}</i>`).join('')+'<div style="visibility:hidden"></div>'.repeat(first);
   for(let d=1;d<=dim;d++){
     const ds=month+'-'+pad(d),a=att[ds];let cl='';
-    if(ds>T||(s.joined&&ds<s.joined))cl='f';else cl=a?a.type:'A';
+    if(ds>T||(s.joined&&ds<s.joined))cl='f';else cl=a?a.type:(pendingDay(s,ds,false)?'f':'A');
     cal+=`<div class="${cl}${ds===T?' t':''}">${d}</div>`;
   }
   const st0=(s.joined&&s.joined>month+'-01')?s.joined:month+'-01',en0=T<month+'-'+pad(dim)?T:month+'-'+pad(dim);
-  const absDays=en0>=st0?dayList(st0,en0).filter(d=>!att[d]).length:0;
+  const absDays=en0>=st0?dayList(st0,en0).filter(d=>!att[d]&&!pendingDay(s,d,false)).length:0;
   const outs=D.out.filter(o=>(o.date||'').startsWith(month)).sort((a,b)=>(a.date+(a.out||''))<(b.date+(b.out||''))?1:-1);
   const rows=[];
   rows.push(`<div class="irow"><span>${t('salary')}</span><b>${rs(s.salary)}</b></div>`);
@@ -399,7 +418,7 @@ function mainHtml(){
   rows.push(`<div class="irow"><span>${t('withdrawn')}</span><b>${rs(c.taken+c.settled)}</b></div>`);
   const pays=c.pays.slice().sort((a,b)=>a.date<b.date?1:-1);
   return `<div class="top"><button class="pill" onclick="pull()">${busy?'...':t('refresh')}</button><button class="pill" onclick="setLang('${lang==='en'?'hi':'en'}')">${lang==='en'?'हिन्दी':'English'}</button></div>
-  <div class="card"><div class="who">${av(s,56)}<div class="grow"><div class="nm">${esc(s.name)}</div><div class="sub">${esc(BIZ.name)}</div></div><div style="text-align:right"><div class="sub">${t('today')}</div><span class="tag ${ty||'A'}">${ty?({P:t('present'),H:t('half'),L:t('leave')}[ty]||t('absent')):t('notMarked')}</span>${todayAtt&&todayAtt.time?`<div class="sub" style="margin-top:3px">${fmtT(todayAtt.time)}</div>`:''}</div></div></div>
+  <div class="card"><div class="who">${av(s,56)}<div class="grow"><div class="nm">${esc(s.name)}</div><div class="sub">${esc(BIZ.name)}</div></div><div style="text-align:right"><div class="sub">${t('today')}</div><span class="tag ${pend?'A':ty||'A'}">${pend?t('pendLbl'):ty?({P:t('present'),H:t('half'),L:t('leave')}[ty]||t('absent')):dutyOver?t('absent'):t('notMarked')}</span>${tx?`<div class="sub" style="margin-top:3px">${tx}</div>`:''}${tx2?`<div class="sub">${tx2}</div>`:''}</div></div></div>
   <div class="mbar"><button onclick="shift(-1)">‹</button><span>${mlabel(month)}</span><button onclick="shift(1)" ${month>=T.slice(0,7)?'disabled':''}>›</button></div>
   <div class="tiles"><div><b class="g">${c.present}</b><span>${t('present')}</span></div><div><b style="color:var(--blue)">${c.leave}</b><span>${t('leave')}</span></div><div><b class="r">${absDays}</b><span>${t('absent')}</span></div></div>
   <div class="card"><div class="big">${c.held?`<span class="sub">${t('dueOn')}</span><b>${fmtD(addMonth1(s.joined||T))}</b>`:`<span class="sub">${over?t('overdrawn'):t('remaining')}</span><b class="${over?'r':'g'}">${rs(Math.abs(c.bal))}</b>`}</div>${rows.join('')}${c.held?`<div class="banner">${t('held',{d:fmtD(dueDate(s))})}</div>`:''}${c.onTrack&&c.potential>0?`<div class="banner g">✓ ${t('onTrack',{a:rs(c.potential)})}</div>`:''}</div>
