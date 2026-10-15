@@ -1418,6 +1418,7 @@ async function pushOff(){
     if(sub){const ep=sub.endpoint;await sub.unsubscribe();try{await pushCall('/rest/v1/rpc/remove_push_sub',{method:'POST',body:JSON.stringify({p_endpoint:ep})})}catch(e){}}
   }catch(e){}
 }
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='push-refresh'){try{syncNow()}catch(_){}}});
 addEventListener('load',()=>setTimeout(()=>{try{if(PUSH_KEY&&('Notification' in window)&&Notification.permission==='granted'&&PUSH_WANT())pushEnable()}catch(e){}},4000));
 
 /* ---------- Team apps: access codes for the punch phone and staff phones ---------- */

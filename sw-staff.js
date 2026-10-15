@@ -13,7 +13,8 @@ self.addEventListener('fetch',e=>{
 self.addEventListener('push',e=>{
   let d={};try{d=e.data?e.data.json():{}}catch(_){d={body:e.data?e.data.text():''}}
   e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(cs=>{
-    if(cs.some(c=>c.visibilityState==='visible'))return; /* app open: in-app banner handles it */
+    const vis=cs.filter(c=>c.visibilityState==='visible');
+    if(vis.length){vis.forEach(c=>c.postMessage({type:'push-refresh'}));return} /* app open: refresh now, in-app banner handles it */
     return self.registration.showNotification(d.title||'SONE RESTAURANT',{body:d.body||'',icon:d.icon||undefined,tag:d.tag||undefined,renotify:true,silent:false,vibrate:[200,100,200],data:{url:d.url||''}});
   }));
 });

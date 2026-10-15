@@ -272,6 +272,7 @@ async function pushOff(){
     if(sub){const ep=sub.endpoint;await sub.unsubscribe();try{await pushCall('/rest/v1/rpc/remove_push_sub',{method:'POST',body:JSON.stringify({p_endpoint:ep})})}catch(e){}}
   }catch(e){}
 }
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='push-refresh'){try{pull()}catch(_){}}});
 addEventListener('load',()=>setTimeout(()=>{try{if(PUSH_KEY&&('Notification' in window)&&Notification.permission==='granted'&&PUSH_WANT())pushEnable()}catch(e){}},4000));
 
 const sigOf=r=>JSON.stringify([r.type,r.time,r.kind,r.amt,r.out,r.in,r.date,r.mode]);
@@ -295,6 +296,7 @@ function evMsg(e){
   if(r.in)return{text:fem(t('nBack',{t:fmtT(r.in),du:fmtDur(durMin(r.out,r.in))})),glyph:'↩',col:'#007aff',tag:'out'+r.id};
   return{text:t('nOut',{t:fmtT(r.out)}),glyph:'↗',col:'#ff9500',tag:'out'+r.id};
 }
+let quiet=true; /* first refresh after opening the app stays silent: push already told you */
 function announce(evs){
   const ms=evs.map(evMsg).filter(Boolean);if(!ms.length)return;
   const show=ms.slice(0,4);
@@ -348,7 +350,7 @@ async function pull(){
       if(r.kind==='staff')n.staff=d;else if(r.kind==='att')n.att.push(d);else if(r.kind==='pay')n.pay.push(d);else if(r.kind==='out')n.out.push(d)});
     const nd=cleanD(n);evs=diffEvs(D,nd);D=nd;last=D.at;LS.set('staff_data',D);netOk=true;
   }catch(e){netOk=false}
-  busy=false;render();announce(evs);
+  busy=false;render();announce(quiet?[]:evs);quiet=false;
 }
 /* ---------- screens ---------- */
 function setupHtml(){
@@ -423,8 +425,8 @@ function render0(){
 document.documentElement.lang=lang;
 D=cleanD(D);
 render();pull();
-setInterval(()=>{if(!document.hidden)pull()},90000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+setInterval(()=>{if(!document.hidden)pull()},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){quiet=true;pull()}});
 </script>
 <script>
 /* PWA: service worker + install prompt */
