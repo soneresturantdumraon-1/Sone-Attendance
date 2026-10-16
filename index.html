@@ -67,6 +67,8 @@ details.gd .gb div::before{content:"•";position:absolute;left:2px;color:var(--
 .btn.pri{background:var(--blue);color:#fff}
 .btn.tint{background:color-mix(in srgb,var(--blue) 14%,transparent);color:var(--blue)}
 .btn.red{background:var(--red);color:#fff}
+.btn.wa{background:#25D366;color:#fff}
+.btn.waR{background:#25D366;color:#fff;width:40px;height:40px;padding:0;border-radius:50%;flex:none}
 .btn.plain{color:var(--blue);width:100%;height:36px;margin-top:6px}
 .cta{width:100%;height:54px;border-radius:14px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;margin:0 0 14px}
 .acts{display:flex;gap:8px;margin-top:12px}
@@ -285,7 +287,7 @@ const fmtT=s=>{if(!s)return '';const [h,m]=s.split(':').map(Number);return (h%12
 function toggleLang(){lang=lang==='en'?'hi':'en';try{localStorage.setItem('staff_lang',lang)}catch(e){}document.documentElement.lang=lang;render()}
 
 /* ---------- Icons ---------- */
-const IC={
+const IC={dutyout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',markout:'<path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v16.16a1 1 0 0 1-1.24.97L5 20V5.56a2 2 0 0 1 1.52-1.94l4-1A2 2 0 0 1 13 4.56z"/>',outing:'<circle cx="11" cy="13" r="8"/><path d="M11 9v4l2.5 2"/><path d="M19 3v5"/><path d="M16.5 5.5h5"/>',
 check:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',
 wallet:'<rect x="2.5" y="6" width="19" height="12" rx="2.8"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v.01M18 14.5v.01"/>',
 chart:'<path d="M5 20v-7M12 20V5M19 20V9"/>',
@@ -317,6 +319,7 @@ book:'<path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zM5 17a3 3 0 0 1 3-3h9"/
 speaker:'<path d="M4 10v4h3l5 4V6L7 10H4zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>'
 };
 const ic=(n,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
+const waIcW=(s=16)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="flex:none"><path fill="#fff" d="M12.04 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.3-1.4A9.9 9.9 0 1 0 12.04 2z"/><path fill="#25D366" d="M16.6 14.4c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1-.8-.4-1.9-1-2.8-2.4-.1-.2 0-.3.1-.4l.4-.5c.1-.1.1-.3.2-.4.1-.1 0-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.4c-.2 0-.4.1-.6.3-.6.6-.9 1.3-.9 2.1.1 1 .6 2 1.5 3 1.3 1.6 3 2.4 4.9 2.8.7.1 1.3 0 1.9-.4.4-.3.7-.8.8-1.3 0-.2-.1-.3-.2-.4z"/></svg>`;
 const waIc=(s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path fill="#25D366" d="M12.04 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.3-1.4A9.9 9.9 0 1 0 12.04 2z"/><path fill="#fff" d="M16.6 14.4c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1-.8-.4-1.9-1-2.8-2.4-.1-.2 0-.3.1-.4l.4-.5c.1-.1.1-.3.2-.4.1-.1 0-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.4c-.2 0-.4.1-.6.3-.6.6-.9 1.3-.9 2.1.1 1 .6 2 1.5 3 1.3 1.6 3 2.4 4.9 2.8.7.1 1.3 0 1.9-.4.4-.3.7-.8.8-1.3 0-.2-.1-.3-.2-.4z"/></svg>`;
 const TICON={att:'check',pay:'wallet',rep:'chart',staff:'people',set:'sliders'};
 
@@ -658,6 +661,50 @@ function dayRowsHtml(s,m,c){
   }).join('');
   return `<div class="scroll"><table class="tbl"><tr><th>${t('day')}</th><th>${t('status')}</th><th>${t('activity')}</th><th class="rt">${t('balanceAfter')}</th></tr>${rows}</table></div>`;
 }
+function wdRows(mode){const over=mode==='over',rem=mode==='rem',rows=[];let total=0;
+  db.staff.filter(s=>visibleIn(s,month)).forEach(s=>{const c=calcM(s,month),amt=over?-c.bal:rem?c.bal:c.taken+c.settled;if(over?c.bal<0:rem?c.bal>0:c.pays.length&&amt>0){total+=amt;rows.push({s,c,amt})}});
+  rows.sort((x,y)=>y.amt-x.amt);return{rows,total}}
+function listCard(o){
+  const W=1080,M=44,FF='-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",Arial,sans-serif';
+  const draw=(g,H)=>{
+    const rr=(x,y,w,hh,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+hh,r);g.arcTo(x+w,y+hh,x,y+hh,r);g.arcTo(x,y+hh,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()};
+    const tx=(s,x,y,p)=>{p=p||{};g.font=(p.w||400)+' '+(p.s||30)+'px '+FF;g.fillStyle=p.c||'#111';g.textAlign=p.a||'left';g.textBaseline='alphabetic';let v=String(s);if(p.mw&&g.measureText(v).width>p.mw){while(v.length>1&&g.measureText(v+'\u2026').width>p.mw)v=v.slice(0,-1);v+='\u2026'}g.fillText(v,x,y)};
+    const card=(y,hh)=>{rr(M,y,W-2*M,hh,26);g.fillStyle='#ffffff';g.fill()};
+    g.fillStyle='#f2f2f7';g.fillRect(0,0,W,H);
+    const gr=g.createLinearGradient(0,0,W,210);gr.addColorStop(0,'#4aa8ff');gr.addColorStop(1,'#0a5cff');g.fillStyle=gr;g.fillRect(0,0,W,210);
+    tx(biz().name,M,56,{s:30,w:800,c:'#fff',mw:W-2*M});
+    tx(biz().place,M,90,{s:22,w:500,c:'rgba(255,255,255,.85)',mw:W-2*M});
+    tx(o.title+' \u00b7 '+o.period,M,160,{s:44,w:700,c:'#fff',mw:W-2*M});
+    let y=240;
+    card(y,110);tx(t('total'),M+32,y+68,{s:34,w:700});tx(o.total,W-M-32,y+70,{s:46,w:800,c:o.col,a:'right'});y+=136;
+    o.items.forEach(it=>{
+      const ln=it.lines.slice(0,12),ex=it.lines.length-ln.length,hh=100+ln.length*56+(ex>0?50:0)+10;
+      card(y,hh);
+      tx(it.name,M+32,y+62,{s:38,w:700,mw:640});tx(it.amt,W-M-32,y+64,{s:40,w:800,c:o.col,a:'right'});
+      ln.forEach((l,i)=>{const ry=y+100+i*56;tx(l[0],M+32,ry+34,{s:26,c:'#6e6e73',mw:640});tx(l[1],W-M-32,ry+34,{s:28,w:700,a:'right'})});
+      if(ex>0)tx('+'+ex,M+32,y+100+ln.length*56+34,{s:26,c:'#8e8e93'});
+      y+=hh+22;
+    });
+    tx(biz().name+' \u00b7 '+biz().place+' \u00b7 '+fmtD(today()),W/2,y+34,{s:24,c:'#a0a0a8',a:'center',mw:W-2*M});
+    return y+74;
+  };
+  const c0=document.createElement('canvas');c0.width=W;c0.height=6000;
+  const H=Math.ceil(draw(c0.getContext('2d'),6000));
+  const c=document.createElement('canvas');c.width=W;c.height=H;draw(c.getContext('2d'),H);
+  return c;
+}
+async function wdShare(mode){
+  const over=mode==='over',rem=mode==='rem',{rows,total}=wdRows(mode);
+  if(!rows.length){toast(t('noWdList'));return}
+  const title=over?t('overdrawn'):rem?t('remaining'):t('totalWithdrawn'),col=over?'#ff3b30':rem?'#1fa84f':'#111111';
+  const items=rows.map(({s,c,amt})=>({name:s.name,amt:rs(amt),lines:rem?[[t('totalPayable'),rs(c.net+c.bf)],[t('totalWithdrawn'),rs(c.taken+c.settled)]]:c.pays.slice().sort((a,b)=>a.date<b.date?1:-1).map(p=>[fmtD(p.date)+' \u00b7 '+(p.kind==='take'?t('withdrewLabel'):t('paidLabel'))+(p.note?' \u00b7 '+p.note:''),rs(p.amt)])}));
+  toast(t('cardPrep'));
+  const cv=listCard({title,period:mlabel(month),total:rs(total),col,items});
+  const blob=await new Promise(r=>cv.toBlob(r,'image/png')),fname=(title+'-'+month).replace(/[^\w\u0900-\u097F-]+/g,'_')+'.png',file=new File([blob],fname,{type:'image/png'}),cap=title+' \u00b7 '+mlabel(month)+': '+rs(total);
+  if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],text:cap});return}catch(e){if(e&&e.name==='AbortError')return}}
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();a.remove();toast(t('cardSaved'));
+  setTimeout(()=>waOpen('https://wa.me/?text='+encodeURIComponent(cap)),700);
+}
 function wdSheet(mode){
   const over=mode==='over',rem=mode==='rem',rows=[];let total=0;
   db.staff.filter(s=>visibleIn(s,month)).forEach(s=>{
@@ -665,7 +712,7 @@ function wdSheet(mode){
     if(over?c.bal<0:rem?c.bal>0:c.pays.length&&amt>0){total+=amt;rows.push({s,c,amt})}
   });
   rows.sort((x,y)=>y.amt-x.amt);
-  const body=rows.length?`<div class="list" style="padding:0 14px"><div class="irow"><span><b>${t('total')}</b> · ${mlabel(month)}</span><b class="${over?'r':rem?'g':''}">${rs(total)}</b></div></div>`+rows.map(({s,c,amt})=>{
+  const body=rows.length?`<div class="list" style="padding:0 14px"><div class="irow"><span><b>${t('total')}</b> · ${mlabel(month)}</span><span style="flex:none;display:flex;align-items:center;gap:10px"><b class="${over?'r':rem?'g':''}">${rs(total)}</b><button class="btn waR" style="width:34px;height:34px" title="${t('shareWa')}" aria-label="${t('shareWa')}" onclick="wdShare('${mode}')">${waIcW(20)}</button></span></div></div>`+rows.map(({s,c,amt})=>{
     const ents=rem?`<div class="irow"><span>${t('totalPayable')}</span><b>${rs(c.net+c.bf)}</b></div><div class="irow"><span>${t('totalWithdrawn')}</span><b>${rs(c.taken+c.settled)}</b></div>`:c.pays.slice().sort((a,b)=>a.date<b.date?1:-1).map(p=>`<div class="irow"><span>${fmtD(p.date)} · ${p.kind==='take'?t('withdrewLabel'):t('paidLabel')}${p.mode?' · '+t(p.mode):''}${p.note?' · '+esc(p.note):''}</span><b>${rs(p.amt)}</b></div>`).join('');
     return `<div class="card" style="margin-top:12px"><div class="who">${av(s,40)}<div class="grow"><div class="nm">${esc(s.name)}</div></div><div class="amt ${over?'r':rem?'g':''}">${rs(amt)}</div></div><div style="margin-top:8px">${ents||`<div class="sub">${t('fromPrev')}</div>`}</div></div>`;
   }).join(''):`<div class="empty">${t('noWdList')}</div>`;
@@ -800,10 +847,21 @@ function waRange(sid){showCard(sid,'range')}
 function staffReport(sid,m){
   const s=db.staff.find(x=>x.id===sid);m=m||today().slice(0,7);
   const txt=monthReportText(sid,m),cur=today().slice(0,7);
-  sheet(s.name,`<div class="card dateRow"><button class="icbtn" onclick="staffReport('${sid}','${shiftM(m,-1)}')">${ic('chL',20)}</button><label class="dpick">${ic('cal',18)}<span>${mlabel(m)}</span><input type="month" max="${cur}" value="${m}" onchange="if(this.value)staffReport('${sid}',this.value)"></label><button class="icbtn" ${m>=cur?'disabled':''} onclick="staffReport('${sid}','${shiftM(m,1)}')">${ic('chR',20)}</button></div><textarea id="rtx2" rows="15" readonly>${esc(txt)}</textarea><div class="acts"><button class="btn grow" style="background:#25D366;color:#fff" onclick="waSend('${sid}','${m}')">${waIc(20)} ${t('whatsapp')}</button></div>`,{left:t('close'),right:t('copy'),onRight:()=>{const el=$('#rtx2');el.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}if(ok)toast(t('copied'));else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast(t('copied'))).catch(()=>{})}});
+  sheet(s.name,`<div class="card dateRow"><button class="icbtn" onclick="staffReport('${sid}','${shiftM(m,-1)}')">${ic('chL',20)}</button><label class="dpick">${ic('cal',18)}<span>${mlabel(m)}</span><input type="month" max="${cur}" value="${m}" onchange="if(this.value)staffReport('${sid}',this.value)"></label><button class="icbtn" ${m>=cur?'disabled':''} onclick="staffReport('${sid}','${shiftM(m,1)}')">${ic('chR',20)}</button></div><textarea id="rtx2" rows="15" readonly>${esc(txt)}</textarea><div class="acts"><button class="btn wa" onclick="waSend('${sid}','${m}')">${waIcW(16)} ${t('whatsapp')}</button></div>`,{left:t('close'),right:t('copy'),onRight:()=>{const el=$('#rtx2');el.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}if(ok)toast(t('copied'));else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast(t('copied'))).catch(()=>{})}});
 }
 
 /* ---------- Report card image (WhatsApp) ---------- */
+function dayLog(sid,from,to){
+  const s=db.staff.find(x=>x.id===sid),T=today(),out=[];
+  dayList(from,to).forEach(d=>{
+    if(d>T||(s.joined&&d<s.joined))return;
+    const a=attOf(sid,d),ty=a?a.type:(pendingDay(s,d)?'-':'A');
+    const act=db.pay.filter(p=>p.sid===sid&&p.date===d).map(p=>(p.kind==='take'?t('withdrewLabel'):t('paidLabel'))+' '+rs(p.amt)+(p.note?' ('+p.note+')':''))
+      .concat(db.out.filter(o=>o.sid===sid&&o.date===d).map(o=>t('outShort')+' '+fmtT(o.out)+(o.in?' - '+fmtT(o.in):'')));
+    out.push({d:parse(d).d+' '+wdS(d),ty,time:a&&a.time?fmtT(a.time):'',act:act.join(', ')});
+  });
+  return out;
+}
 function cardData(sid,kind,m){
   const s=db.staff.find(x=>x.id===sid);
   const d={name:s.name,photo:s.photo,tiles:[],rows:[],res:null,txns:[],outs:[],period:''};
@@ -818,7 +876,7 @@ function cardData(sid,kind,m){
     d.outs=db.out.filter(o=>o.sid===sid&&o.date>=rf&&o.date<=rt).sort((a,b)=>a.date===b.date?(a.out<b.out?-1:1):(a.date<b.date?-1:1));
     const tot=d.outs.filter(o=>o.in).reduce((q,o)=>q+durMin(o.out,o.in),0);
     if(tot)d.rows.push([t('totalOutside'),fmtDur(tot)]);
-    d.file=s.name+'-'+rf+'_'+rt;
+    d.days=dayLog(sid,rf,rt);d.file=s.name+'-'+rf+'_'+rt;
   }else{
     const c=calcM(s,m),T=today(),first=m+'-01',last=m+'-'+pad(c.dim);
     const st=(s.joined||first)>first?s.joined:first,en=T<last?T:last;
@@ -837,7 +895,7 @@ function cardData(sid,kind,m){
     d.res=c.held?{text:t('heldBanner',{d:fmtD(dueDate(s)),a:rs(c.base)}),k:'n'}:c.bal<0?{text:t('overdrawnBanner',{a:rs(-c.bal)}),k:'r'}:{text:t('remainingBanner',{a:rs(c.bal)}),k:'g'};
     d.txns=c.pays.slice().sort((a,b)=>a.date<b.date?-1:1).map(x=>({d:fmtD(x.date),note:x.note||'',amt:x.amt}));
     d.outs=db.out.filter(o=>o.sid===sid&&o.date.startsWith(m)).sort((a,b)=>a.date===b.date?(a.out<b.out?-1:1):(a.date<b.date?-1:1));
-    d.file=s.name+'-'+m;
+    {const pm=parse(m+'-01');d.days=dayLog(sid,m+'-01',dstr(new Date(pm.y,pm.m,0)))}d.file=s.name+'-'+m;
   }
   return d;
 }
@@ -898,6 +956,18 @@ async function renderCard(d){
       if(ex>0)tx('+'+ex,M+32,y+84+ol.length*68+42,{s:26,c:'#8e8e93'});
       y+=hh+26;
     }
+    if(d.days&&d.days.length){
+      const rh=62,hh=84+d.days.length*rh+10;card(y,hh);
+      tx(t('dailyLog'),M+32,y+56,{s:34,w:700});
+      const SC={P:'#1fa84f',H:'#ff9500',L:'#007aff',A:'#8e8e93'};
+      d.days.forEach((x,i)=>{const ry=y+84+i*rh;
+        tx(x.d,M+32,ry+40,{s:27,mw:150});
+        tx(x.ty==='-'?'-':stLabel(x.ty),M+190,ry+40,{s:26,w:700,c:SC[x.ty]||'#8e8e93',mw:130});
+        if(x.time)tx(x.time,M+330,ry+40,{s:24,c:'#8e8e93',mw:130});
+        if(x.act)tx(x.act,W-M-32,ry+40,{s:23,a:'right',mw:W-2*M-64-440});
+        if(i<d.days.length-1){g.fillStyle='#ececf0';g.fillRect(M+32,ry+rh,W-2*M-64,2)}});
+      y+=hh+26;
+    }
     tx(biz().name+' · '+biz().place+' · '+fmtD(today()),W/2,y+34,{s:24,c:'#a0a0a8',a:'center',mw:W-2*M});
     return y+74;
   };
@@ -914,14 +984,14 @@ async function showCard(sid,kind,m){
   try{
     const c=await renderCard(cardData(sid,kind,m));
     blob=await new Promise(r=>c.toBlob(r,'image/png'));
-    url=URL.createObjectURL(blob);
+    url=c.toDataURL('image/png');
   }catch(e){sheet(s.name,`<div class="empty">${t('cardFail')}</div>`,{left:t('close')});return}
   if(cardState&&cardState.url)try{URL.revokeObjectURL(cardState.url)}catch(e){}
   const fname=(s.name+'-'+(kind==='month'?m:rf+'_'+rt)).replace(/[^\w\u0900-\u097F-]+/g,'_')+'.png';
   cardState={blob,url,sid,kind,m,fname,cap:s.name+' — '+(kind==='month'?mlabel(m):(rf===rt?fmtD(rf):fmtD(rf)+' – '+fmtD(rt)))};
   const cur=today().slice(0,7);
   const nav=kind==='month'?`<div class="card dateRow"><button class="icbtn" onclick="showCard('${sid}','month','${shiftM(m,-1)}')">${ic('chL',20)}</button><div class="dpick" style="cursor:default">${ic('cal',18)}<span>${mlabel(m)}</span></div><button class="icbtn" ${m>=cur?'disabled':''} onclick="showCard('${sid}','month','${shiftM(m,1)}')">${ic('chR',20)}</button></div>`:'';
-  sheet(s.name,`${nav}<img src="${url}" style="width:100%;border-radius:14px;display:block;box-shadow:0 2px 12px rgba(0,0,0,.18)"><div class="acts" style="margin-top:14px"><button class="btn grow" style="background:#25D366;color:#fff" onclick="shareCard()">${waIc(20)} ${t('shareWa')}</button><a class="btn tint" download="${fname}" href="${url}" style="text-decoration:none">${t('saveImg')}</a></div><div class="foot" style="margin:10px 4px 0">${t('shareNote')}</div>`,{left:t('close')});
+  sheet(s.name,`${nav}<img src="${url}" style="width:100%;border-radius:14px;display:block;box-shadow:0 2px 12px rgba(0,0,0,.18)"><div class="acts" style="margin-top:14px"><button class="btn wa grow" onclick="shareCard()">${waIcW(16)} ${t('shareWa')}</button><a class="btn tint grow" download="${fname}" href="${url}" style="text-decoration:none">${t('saveImg')}</a></div><div class="foot" style="margin:10px 4px 0">${t('shareNote')}</div>`,{left:t('close')});
 }
 async function shareCard(){
   const st=cardState;if(!st)return;
@@ -1032,10 +1102,10 @@ function outBlock(s,T,ty){
   if(!(ty==='P'||ty==='H'||os.length))return '';
   let h=`<div class="acts" style="margin-top:10px">`;
   if(isT&&op)h+=`<button class="btn grow" style="background:var(--orange);color:#fff" onclick="outBack('${s.id}')">${ic('chL',18)} ${t('markBack')}</button>`;
-  else if(isT&&(ty==='P'||ty==='H'))h+=`<button class="btn tint grow" onclick="outNow('${s.id}')">${ic('out',18)} ${t('markOut')}</button>`;
-  h+=`<button class="btn tint" onclick="outSheet('${s.id}','${T}')">${ic('plus',18)} ${t('addOuting')}</button></div>`;
+  else if(isT&&(ty==='P'||ty==='H'))h+=`<button class="btn tint grow" onclick="outNow('${s.id}')">${ic('markout',18)} ${t('markOut')}</button>`;
+  h+=`<button class="btn tint" onclick="outSheet('${s.id}','${T}')">${ic('outing',18)} ${t('addOuting')}</button></div>`;
   const at=attOf(s.id,T);
-  if(isT&&(ty==='P'||ty==='H'))h+=`<div class="acts" style="margin-top:10px"><button class="btn ${at&&at.out?'tint':'pri'} grow" onclick="dutyOut('${s.id}')">${ic('out',18)} ${at&&at.out?t('dutyOutAt',{t:fmtT(at.out)}):t('dutyOut')}</button></div>`;
+  if(isT&&(ty==='P'||ty==='H'))h+=`<div class="acts" style="margin-top:10px"><button class="btn ${at&&at.out?'tint':'pri'} grow" onclick="dutyOut('${s.id}')">${ic(at&&at.out?'check':'dutyout',18)} ${at&&at.out?t('dutyOutAt',{t:fmtT(at.out)}):t('dutyOut')}</button></div>`;
   return h;
 }
 function outSection(sid){
@@ -1533,7 +1603,7 @@ function codeBlock(page,code,waMsg,waPhone){
   const link=inviteLink(page,code);
   return `<div style="text-align:center;margin:6px 0 12px"><div class="sub">${t('codeReady')}</div><div style="font-size:34px;font-weight:800;letter-spacing:4px">${code}</div><div class="sub">${t('codeValid')}</div></div>
   <textarea rows="3" readonly onclick="this.select()">${esc(link)}</textarea>
-  <div class="acts"><button class="btn grow" style="background:#25D366;color:#fff" onclick="waOpen('https://wa.me/${waPhone||''}?text='+encodeURIComponent(${JSON.stringify(waMsg).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}))">${waIc(20)} ${t('sendWa')}</button><button class="btn tint" onclick="copyText(${JSON.stringify(link).replace(/&/g,'&amp;').replace(/"/g,'&quot;')})">${ic('copy',18)} ${t('copyLink')}</button></div>`;
+  <div class="acts"><button class="btn wa" onclick="waOpen('https://wa.me/${waPhone||''}?text='+encodeURIComponent(${JSON.stringify(waMsg).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}))">${waIcW(16)} ${t('sendWa')}</button><button class="btn tint" onclick="copyText(${JSON.stringify(link).replace(/&/g,'&amp;').replace(/"/g,'&quot;')})">${ic('copy',18)} ${t('copyLink')}</button></div>`;
 }
 async function reqSheet(){
   const c=sbCfg();
