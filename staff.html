@@ -79,11 +79,25 @@ button.frow{width:100%;text-align:left;justify-content:space-between;color:var(-
 @keyframes alertdown{from{transform:translateY(-30px);opacity:0}to{transform:none;opacity:1}}
 .top{display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px}
 .pill{background:var(--fill);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:600}
+#rqov{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.rqh{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border-bottom:.5px solid var(--sep)}
+.rqi{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--blue);flex:none;text-decoration:none}
+.rqb{flex:1;overflow:auto;padding:12px}
+.rqc{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--card);border-top:.5px solid var(--sep)}
+.rqc input{flex:1;height:40px;border-radius:20px;background:var(--fill);padding:0 14px;border:0;outline:0;color:var(--tx);font:inherit}
+.rqi.snd{background:var(--blue);color:#fff}
+.bub{max-width:82%;padding:8px 10px;border-radius:14px;margin:0 0 8px;font-size:15px;line-height:1.35;word-break:break-word;white-space:pre-wrap}
+.bub i{display:block;font-size:11px;opacity:.6;font-style:normal;text-align:right;margin-top:2px}
+.bub img{max-width:100%;border-radius:10px;display:block;margin-bottom:4px}
+.bub.me{margin-left:auto;background:#d9fdd3;color:#111;border-bottom-right-radius:4px}
+.bub.ow{background:var(--card);border-bottom-left-radius:4px}
+.sysl{text-align:center;font-size:12px;color:var(--tx2);margin:6px 0 10px}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <script src="config.js"></script>
+<script src="offline.js"></script>
 <script>
 /* ===== mobile-number access: request -> owner approves (config.js needed) ===== */
 const SBC=(window.SB&&/^https?:\/\/[a-z0-9]/i.test(window.SB.url||'')&&!/XXXX/.test(window.SB.url)&&(window.SB.key||'').length>=20&&window.SB.key!=='eyJ...')?window.SB:null;
@@ -141,7 +155,7 @@ salary:'Monthly Salary',bonus:'No-leave bonus',prorated:'Pro-rated from {d}',ded
 remaining:'Remaining',overdrawn:'Overdrawn (advance)',dueOn:'Salary due on',held:'Salary not payable yet. Due on {d}.',onTrack:'On track for a {a} bonus',
 attendance:'Attendance',lPresent:'Present',lHalf:'Half',lLeave:'Leave',lAbsent:'Absent',money:'Money received',noTx:'No money received this month',cash:'Cash',online:'Online',wd:'Received',paid:'Salary received',
 outs:'Out / In',noOut:'No outings this month',outNow:'Out now',since:'since {t}',updated:'Updated {t}',offline:'Offline, showing saved data',refresh:'Refresh',
-alertsSec:'Alerts',alNotify:'Phone notification',alSound:'Sound',alTest:'Test alert',alDenied:'Notifications are blocked in the browser settings',nAtt:'Attendance marked: {ty} ({d})',pendLbl:'Not in yet',dutyOutN:'Duty out recorded: {t}',lateByS:'Late {m}',onTimeS:'On time',workedS:'Worked {d}',outAtS:'Out {t}',nTake:'Money received: {a} ({d}){m}',nPaid:'Salary received: {a} ({d}){m}',nOut:'Out time recorded: {t}',nBack:'Back at {t}. Outside for {du}',nMore:'+{n} more updates',nTest:'This is a test alert',duesAdv:'Dues & Advance',duesL:'Dues (to receive)',advL:'Advance (to return)',advTotal:'Total received till now',advMonth:'Received this month',duesNote:'Balance as of end of {m}',loading:'Loading...',noAccess:'No data found. Your access may have been removed. Ask the owner for a new link.',disconnect:'Disconnect this phone',sure:'Disconnect this phone from the Staff app?',hrS:'h',minS:'m'},
+alertsSec:'Alerts',alNotify:'Phone notification',alSound:'Sound',alTest:'Test alert',alDenied:'Notifications are blocked in the browser settings',nAtt:'Attendance marked: {ty} ({d})',pendLbl:'Not in yet',dutyOutN:'Duty out recorded: {t}',lateByS:'Late {m}',onTimeS:'On time',workedS:'Worked {d}',outAtS:'Out {t}',rqLeave:'Leave',rqAdv:'Advance',rqNew:'New',rqNone:'No requests yet',rqPendN:'{n} waiting for reply',rqWait:'Waiting',rqOk:'Approved',rqNo:'Rejected',rqAskLeave:'Ask for leave',rqAskAdv:'Ask for advance',rqFrom:'From',rqTo:'To',rqAmt:'Amount',rqReason:'Write the reason',rqPhoto:'Photo',rqSend:'Send request',rqNeed:'Please write the reason',rqNeedAmt:'Enter the amount',rqSent:'Request sent',rqFail:'Could not send. Check internet',rqMsg:'Type a message',rqDecided:'Your {k} request was {s}',rqOwnerMsg:'Owner: {x}',rqCall:'Call owner',nTake:'Money received: {a} ({d}){m}',nPaid:'Salary received: {a} ({d}){m}',nOut:'Out time recorded: {t}',nBack:'Back at {t}. Outside for {du}',nMore:'+{n} more updates',nTest:'This is a test alert',duesAdv:'Dues & Advance',duesL:'Dues (to receive)',advL:'Advance (to return)',advTotal:'Total received till now',advMonth:'Received this month',duesNote:'Balance as of end of {m}',loading:'Loading...',noAccess:'No data found. Your access may have been removed. Ask the owner for a new link.',disconnect:'Disconnect this phone',sure:'Disconnect this phone from the Staff app?',hrS:'h',minS:'m'},
 hi:{
 title:'स्टाफ ऐप',setupSub:'अपनी हाज़िरी, वेतन और हिसाब देखें',url:'प्रोजेक्ट URL',key:'पब्लिक की',code:'एक्सेस कोड',connect:'कनेक्ट करें',fill:'URL, की और कोड भरें।',
 anonOff:'Anonymous sign-in बंद है। Supabase में Authentication > Sign In / Providers में "Allow anonymous sign-ins" चालू करें।',wrongCode:'यह कोड स्टाफ ऐप का नहीं है।',askOwner:'मालिक से अपना लिंक मांगें: स्टाफ पेज > Staff App Access।',
@@ -150,7 +164,7 @@ salary:'मासिक वेतन',bonus:'बिना छुट्टी ब
 remaining:'शेष',overdrawn:'अधिक लिया (अग्रिम)',dueOn:'वेतन देय',held:'वेतन अभी देय नहीं। देय तिथि {d}।',onTrack:'{a} बोनस की राह पर',
 attendance:'हाज़िरी',lPresent:'उपस्थित',lHalf:'आधा',lLeave:'छुट्टी',lAbsent:'अनुपस्थित',money:'मिला हुआ पैसा',noTx:'इस माह कोई पैसा नहीं मिला',cash:'नकद',online:'ऑनलाइन',wd:'मिला',paid:'वेतन मिला',
 outs:'बाहर / वापस',noOut:'इस माह कोई बाहर जाना नहीं',outNow:'अभी बाहर',since:'{t} से',updated:'अपडेट {t}',offline:'ऑफलाइन, सेव किया डेटा दिख रहा है',refresh:'रिफ्रेश',
-alertsSec:'अलर्ट',alNotify:'फोन नोटिफिकेशन',alSound:'आवाज़',alTest:'अलर्ट जाँचें',alDenied:'ब्राउज़र सेटिंग में नोटिफिकेशन बंद हैं',nAtt:'हाज़िरी दर्ज: {ty} ({d})',pendLbl:'अभी नहीं आए',dutyOutN:'ड्यूटी खत्म दर्ज: {t}',lateByS:'{m} देर',onTimeS:'समय पर',workedS:'काम किया {d}',outAtS:'बाहर {t}',nTake:'पैसे मिले: {a} ({d}){m}',nPaid:'वेतन मिला: {a} ({d}){m}',nOut:'बाहर जाने का समय दर्ज: {t}',nBack:'{t} पर वापसी। {du} बाहर रहे',nMore:'+{n} और अपडेट',nTest:'यह एक जाँच अलर्ट है',duesAdv:'बकाया और अग्रिम',duesL:'बकाया (मिलना है)',advL:'अग्रिम (लौटाना है)',advTotal:'अब तक कुल मिला',advMonth:'इस माह मिला',duesNote:'{m} के अंत तक का हिसाब',loading:'लोड हो रहा है...',noAccess:'कोई डेटा नहीं मिला। हो सकता है आपका एक्सेस हटा दिया गया हो। मालिक से नया लिंक मांगें।',disconnect:'इस फ़ोन को डिसकनेक्ट करें',sure:'इस फ़ोन को स्टाफ ऐप से डिसकनेक्ट करें?',hrS:'घं',minS:'मि'}};
+alertsSec:'अलर्ट',alNotify:'फोन नोटिफिकेशन',alSound:'आवाज़',alTest:'अलर्ट जाँचें',alDenied:'ब्राउज़र सेटिंग में नोटिफिकेशन बंद हैं',nAtt:'हाज़िरी दर्ज: {ty} ({d})',pendLbl:'अभी नहीं आए',dutyOutN:'ड्यूटी खत्म दर्ज: {t}',lateByS:'{m} देर',onTimeS:'समय पर',workedS:'काम किया {d}',outAtS:'बाहर {t}',rqLeave:'छुट्टी',rqAdv:'अग्रिम (एडवांस)',rqNew:'नया',rqNone:'अभी कोई अनुरोध नहीं',rqPendN:'{n} जवाब के इंतज़ार में',rqWait:'इंतज़ार',rqOk:'मंज़ूर',rqNo:'नामंज़ूर',rqAskLeave:'छुट्टी माँगें',rqAskAdv:'अग्रिम माँगें',rqFrom:'से',rqTo:'तक',rqAmt:'रकम',rqReason:'कारण लिखें',rqPhoto:'फ़ोटो',rqSend:'अनुरोध भेजें',rqNeed:'कृपया कारण लिखें',rqNeedAmt:'रकम डालें',rqSent:'अनुरोध भेज दिया',rqFail:'भेज नहीं पाए। इंटरनेट देखें',rqMsg:'संदेश लिखें',rqDecided:'आपका {k} अनुरोध {s}',rqOwnerMsg:'मालिक: {x}',rqCall:'मालिक को कॉल',nTake:'पैसे मिले: {a} ({d}){m}',nPaid:'वेतन मिला: {a} ({d}){m}',nOut:'बाहर जाने का समय दर्ज: {t}',nBack:'{t} पर वापसी। {du} बाहर रहे',nMore:'+{n} और अपडेट',nTest:'यह एक जाँच अलर्ट है',duesAdv:'बकाया और अग्रिम',duesL:'बकाया (मिलना है)',advL:'अग्रिम (लौटाना है)',advTotal:'अब तक कुल मिला',advMonth:'इस माह मिला',duesNote:'{m} के अंत तक का हिसाब',loading:'लोड हो रहा है...',noAccess:'कोई डेटा नहीं मिला। हो सकता है आपका एक्सेस हटा दिया गया हो। मालिक से नया लिंक मांगें।',disconnect:'इस फ़ोन को डिसकनेक्ट करें',sure:'इस फ़ोन को स्टाफ ऐप से डिसकनेक्ट करें?',hrS:'घं',minS:'मि'}};
 const t=(k,o)=>{let v=(I[lang]&&I[lang][k])||I.en[k]||k;if(o)for(const x in o)v=v.split('{'+x+'}').join(o[x]);return v};
 const fem=s=>(lang==='hi'&&D&&D.staff&&D.staff.gender==='F')?s.split('रहे').join('रहीं'):s;
 const WS_={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],hi:['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि']};
@@ -419,6 +433,7 @@ function mainHtml(){
   const pays=c.pays.slice().sort((a,b)=>a.date<b.date?1:-1);
   return `<div class="top"><button class="pill" onclick="pull()">${busy?'...':t('refresh')}</button><button class="pill" onclick="setLang('${lang==='en'?'hi':'en'}')">${lang==='en'?'हिन्दी':'English'}</button></div>
   <div class="card"><div class="who">${av(s,56)}<div class="grow"><div class="nm">${esc(s.name)}</div><div class="sub">${esc(BIZ.name)}</div></div><div style="text-align:right"><div class="sub">${t('today')}</div><span class="tag ${pend?'A':ty||'A'}">${pend?t('pendLbl'):ty?({P:t('present'),H:t('half'),L:t('leave')}[ty]||t('absent')):dutyOver?t('absent'):t('notMarked')}</span>${tx?`<div class="sub" style="margin-top:3px">${tx}</div>`:''}${tx2?`<div class="sub">${tx2}</div>`:''}</div></div></div>
+  ${rqCards()}
   <div class="mbar"><button onclick="shift(-1)">‹</button><span>${mlabel(month)}</span><button onclick="shift(1)" ${month>=T.slice(0,7)?'disabled':''}>›</button></div>
   <div class="tiles"><div><b class="g">${c.present}</b><span>${t('present')}</span></div><div><b style="color:var(--blue)">${c.leave}</b><span>${t('leave')}</span></div><div><b class="r">${absDays}</b><span>${t('absent')}</span></div></div>
   <div class="card"><div class="big">${c.held?`<span class="sub">${t('dueOn')}</span><b>${fmtD(addMonth1(s.joined||T))}</b>`:`<span class="sub">${over?t('overdrawn'):t('remaining')}</span><b class="${over?'r':'g'}">${rs(Math.abs(c.bal))}</b>`}</div>${rows.join('')}${c.held?`<div class="banner">${t('held',{d:fmtD(dueDate(s))})}</div>`:''}${c.onTrack&&c.potential>0?`<div class="banner g">✓ ${t('onTrack',{a:rs(c.potential)})}</div>`:''}</div>
@@ -441,10 +456,93 @@ function render0(){
   const ae=document.activeElement;if(ae&&/^(su|sk|sc|phn)$/.test(ae.id||''))return;
   $('#app').innerHTML=(cfg.session&&cfg.role==='staff'&&cfg.sid)?mainHtml():setupHtml();
 }
+/* ---------- requests: leave / advance + chat with owner ---------- */
+let RQ={rows:[],msgs:[]},rqOv=null,rqCur=null,rqBusy=false,rqDraft={},rqQuiet=!cfg.rqSeen;
+const SVGP={send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>',cam:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',back:'<path d="M15 18l-6-6 6-6"/>',leave:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',adv:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>'};
+const sv=(n,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SVGP[n]}</svg>`;
+const rqId=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const rqTime=ts=>new Date(ts).toLocaleString(lang==='hi'?'hi-IN':'en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});
+const rqWarn=m=>showBar({text:m,glyph:'!',col:'#ff9500'});
+function rqImg(cb){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files&&i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.6))};im.src=r.result};r.readAsDataURL(f)};i.click()}
+function rqView(src){const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center';d.innerHTML=`<img src="${src}" style="max-width:100%;max-height:100%">`;d.onclick=()=>d.remove();document.body.appendChild(d)}
+const rqSend1=(kind,id,data)=>api('/rest/v1/rpc/staff_post',{method:'POST',body:JSON.stringify({p_id:id,p_kind:kind,p_data:data})});
+const rqNetErr=e=>!navigator.onLine||e instanceof TypeError;
+async function rqPost(kind,id,data){
+  try{await rqSend1(kind,id,data)}
+  catch(e){if(!rqNetErr(e))throw e;cfg.rqOut=(cfg.rqOut||[]).concat([{kind,id,data}]);saveCfg()}
+}
+let rqFl=false;
+async function rqFlush(){
+  if(rqFl||!cfg.rqOut||!cfg.rqOut.length||!navigator.onLine)return;rqFl=true;
+  try{while(cfg.rqOut.length){const q=cfg.rqOut[0];try{await rqSend1(q.kind,q.id,q.data)}catch(e){if(rqNetErr(e))break}cfg.rqOut.shift();saveCfg()}}finally{rqFl=false}
+}
+async function rqSync(){
+  if(rqBusy||!cfg.session||cfg.role!=='staff'||!cfg.sid)return;rqBusy=true;
+  try{
+    await rqFlush();
+    const rows=await api('/rest/v1/rpc/staff_inbox',{method:'POST',body:'{}'})||[];
+    const seen=cfg.rqSeen||{},ms=[],out=cfg.rqOut||[];
+    RQ.rows=rows.filter(r=>r.kind==='req').map(r=>Object.assign({id:r.id},r.data)).concat(out.filter(q=>q.kind==='req'&&!rows.some(r=>r.id===q.id)).map(q=>Object.assign({id:q.id,q:1},q.data))).sort((a,b)=>b.at-a.at);
+    RQ.msgs=rows.filter(r=>r.kind==='msg').map(r=>Object.assign({id:r.id},r.data)).concat(out.filter(q=>q.kind==='msg'&&!rows.some(r=>r.id===q.id)).map(q=>Object.assign({id:q.id,from:'staff',q:1},q.data))).sort((a,b)=>a.at-b.at);
+    RQ.rows.forEach(r=>{const k='s'+r.id+r.status;if(!seen[k]){seen[k]=1;if(!rqQuiet&&r.status!=='pending'){const ok=r.status==='approved';ms.push({text:t('rqDecided',{k:r.type==='adv'?t('rqAdv'):t('rqLeave'),s:ok?t('rqOk'):t('rqNo')}),glyph:ok?'\u2713':'\u2715',col:ok?'#34c759':'#ff3b30',tag:k})}}});
+    RQ.msgs.forEach(m=>{if(m.from!=='owner')return;if(m.ph)cfg.rqPh=m.ph;if(!seen[m.id]){seen[m.id]=1;if(!rqQuiet)ms.push({text:t('rqOwnerMsg',{x:m.text||t('rqPhoto')}),glyph:'\u{1F4AC}',col:'#007aff',tag:m.id})}});
+    cfg.rqSeen=seen;saveCfg();rqQuiet=false;
+    ms.slice(0,3).forEach((m,i)=>setTimeout(()=>{showBar(m);chime();osNotify(m,i)},i*2500));
+    if(rqOv){if(rqCur)rqPaint()}else render();
+  }catch(e){}finally{rqBusy=false}
+}
+function rqCards(){
+  if(!cfg.session||cfg.role!=='staff')return '';
+  return ['leave','adv'].map(k=>{
+    const L=RQ.rows.filter(r=>r.type===k),pn=L.filter(r=>r.status==='pending').length,col=k==='adv'?'var(--orange)':'var(--blue)';
+    const st=r=>`<span class="tag ${r.status==='approved'?'P':r.status==='rejected'?'A':'H'}">${r.status==='approved'?t('rqOk'):r.status==='rejected'?t('rqNo'):t('rqWait')}</span>`;
+    return `<div class="card"><div class="who"><div style="width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,${col} 16%,transparent);color:${col}">${sv(k,22)}</div><div class="grow"><div class="nm">${k==='adv'?t('rqAdv'):t('rqLeave')}</div><div class="sub">${pn?t('rqPendN',{n:pn}):t('rqNone')}</div></div><button class="pill" onclick="rqForm('${k}')">+ ${t('rqNew')}</button></div>${L.slice(0,3).map(r=>`<div class="irow" onclick="rqChat('${r.id}')" style="cursor:pointer"><span>${r.type==='adv'?rs(r.amt):fmtD(r.from)+(r.to&&r.to!==r.from?' \u2013 '+fmtD(r.to):'')}<div class="sub">${esc((r.reason||'').slice(0,40))}</div></span>${st(r)}</div>`).join('')}</div>`;
+  }).join('');
+}
+function rqOpen(html){if(!rqOv){rqOv=document.createElement('div');rqOv.id='rqov';document.body.appendChild(rqOv)}rqOv.innerHTML=html}
+function rqClose(){if(rqOv){rqOv.remove();rqOv=null}rqCur=null;render()}
+function rqForm(k){
+  rqDraft={type:k,img:null};rqCur=null;
+  rqOpen(`<div class="rqh"><button class="rqi" onclick="rqClose()">${sv('back',22)}</button><b>${k==='adv'?t('rqAskAdv'):t('rqAskLeave')}</b></div><div class="rqb"><div class="list">${k==='adv'?`<div class="frow"><label>${t('rqAmt')}</label><input id="rqa" type="number" inputmode="numeric" placeholder="0" style="text-align:right"></div>`:`<div class="frow"><label>${t('rqFrom')}</label><input id="rqf" type="date" value="${today()}"></div><div class="frow"><label>${t('rqTo')}</label><input id="rqt" type="date" value="${today()}"></div>`}</div><div class="card"><textarea id="rqr" rows="4" placeholder="${t('rqReason')}" style="width:100%;border:0;background:transparent;font:inherit;color:inherit;outline:0;resize:none"></textarea><div id="rqp"></div><button class="pill" onclick="rqPick()">${sv('cam',16)} ${t('rqPhoto')}</button></div><button class="btn pri" id="rqs" onclick="rqSubmit()">${t('rqSend')}</button></div>`);
+}
+function rqPick(){rqImg(d=>{rqDraft.img=d;$('#rqp').innerHTML=`<img src="${d}" style="max-width:100%;max-height:180px;border-radius:12px;margin:8px 0;display:block">`})}
+async function rqSubmit(){
+  const k=rqDraft.type,reason=$('#rqr').value.trim(),d={type:k,reason,status:'pending',at:Date.now(),img:rqDraft.img||null};
+  if(!reason){rqWarn(t('rqNeed'));return}
+  if(k==='adv'){d.amt=Math.round(+$('#rqa').value||0);if(d.amt<=0){rqWarn(t('rqNeedAmt'));return}}
+  else{d.from=$('#rqf').value||today();d.to=$('#rqt').value||d.from;if(d.to<d.from)d.to=d.from}
+  $('#rqs').disabled=true;
+  try{const id=rqId('rq');await rqPost('req',id,d);RQ.rows.unshift(Object.assign({id},d));showBar({text:t('rqSent'),glyph:'\u2713',col:'#34c759'});rqChat(id)}
+  catch(e){const b=$('#rqs');if(b)b.disabled=false;rqWarn(t('rqFail'))}
+}
+function rqChat(id){
+  const r=RQ.rows.find(x=>x.id===id);if(!r)return;rqCur=id;
+  rqOpen(`<div class="rqh"><button class="rqi" onclick="rqClose()">${sv('back',22)}</button><div class="grow"><b>${r.type==='adv'?t('rqAdv'):t('rqLeave')}</b><div class="sub" id="rqst"></div></div><span id="rqcall"></span></div><div class="rqb" id="rqm"></div><div class="rqc"><button class="rqi" onclick="rqPickMsg()">${sv('cam',22)}</button><input id="rqx" placeholder="${t('rqMsg')}" autocomplete="off" onkeydown="if(event.key==='Enter')rqSend()"><button class="rqi snd" onclick="rqSend()">${sv('send',20)}</button></div>`);
+  rqPaint(true);
+}
+function rqPaint(first){
+  const m=$('#rqm');if(!m||!rqCur)return;const r=RQ.rows.find(x=>x.id===rqCur);if(!r)return;
+  const bub=(f,txt,img,at)=>`<div class="bub ${f==='staff'?'me':'ow'}">${img?`<img src="${img}" onclick="rqView(this.src)">`:''}${txt?`<div>${esc(txt)}</div>`:''}<i>${rqTime(at)}</i></div>`;
+  const sum=r.type==='adv'?rs(r.amt):fmtD(r.from)+(r.to&&r.to!==r.from?' \u2013 '+fmtD(r.to):'');
+  const near=m.scrollHeight-m.scrollTop-m.clientHeight<80;
+  let h=`<div class="bub me"><b>${r.type==='adv'?t('rqAdv'):t('rqLeave')}: ${sum}</b>${r.reason?`<div>${esc(r.reason)}</div>`:''}${r.img?`<img src="${r.img}" style="margin-top:6px" onclick="rqView(this.src)">`:''}<i>${rqTime(r.at)}</i></div>`;
+  RQ.msgs.filter(x=>x.rid===rqCur).forEach(x=>{h+=bub(x.from==='owner'?'owner':'staff',x.text,x.img,x.at)});
+  if(r.status!=='pending')h+=`<div class="sysl">${r.status==='approved'?t('rqOk'):t('rqNo')}${r.dat?' \u00b7 '+rqTime(r.dat):''}</div>`;
+  m.innerHTML=h;if(first||near)m.scrollTop=m.scrollHeight;
+  const cl=$('#rqcall');if(cl)cl.innerHTML=cfg.rqPh?`<a class="rqi" href="tel:${esc(cfg.rqPh)}" title="${t('rqCall')}">${sv('phone',20)}</a>`:'';
+  const s=$('#rqst');if(s)s.textContent=r.status==='approved'?t('rqOk'):r.status==='rejected'?t('rqNo'):t('rqWait');
+}
+async function rqMsgPost(text,img){
+  const d={rid:rqCur,text:text||'',img:img||null,at:Date.now()},id=rqId('ms');
+  try{await rqPost('msg',id,d);RQ.msgs.push(Object.assign({id,from:'staff'},d));rqPaint(true)}catch(e){rqWarn(t('rqFail'))}
+}
+function rqSend(){const i=$('#rqx');const v=i.value.trim();if(!v)return;i.value='';rqMsgPost(v,null)}
+function rqPickMsg(){rqImg(d=>rqMsgPost('',d))}
 document.documentElement.lang=lang;
 D=cleanD(D);
 render();pull();
 setInterval(()=>{if(!document.hidden)pull()},30000);
+rqSync();let rqTick=0;setInterval(()=>{if(document.hidden)return;rqTick++;if(rqOv||rqTick%3===0)rqSync()},7000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){quiet=true;pull()}});
 </script>
 <script>
