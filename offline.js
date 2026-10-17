@@ -1,6 +1,6 @@
 /* offline.js - makes index.html, punch.html and staff.html open and work without internet.
    One file, two roles:
-   1) loaded with <script src="offline.js"> it registers itself, shows an Offline badge, warms the face-engine cache
+   1) loaded with <script src="offline.js"> it registers itself, warms the face-engine cache
       and re-syncs when the internet is back;
    2) run as the service worker it caches the app, and the face engine, and keeps push notifications working.
    If you keep your own sw.js / sw-staff.js, put   importScripts('offline.js');   on its first line instead. */
@@ -96,32 +96,11 @@
   /* ================================= PAGE ================================= */
   if (typeof window === 'undefined') return;
   var lsGet = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
-  var hindi = function () { return /^hi/i.test(document.documentElement.lang || lsGet('lang') || ''); };
-  var badge = null, hideT = 0;
-  function showBadge(txt, color) {
-    if (!document.body) return;
-    if (!badge) {
-      badge = document.createElement('div');
-      badge.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 6px);z-index:2147483000;' +
-        'padding:5px 12px;border-radius:14px;font:600 12px/1.3 -apple-system,Roboto,sans-serif;color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);pointer-events:none;max-width:92vw;text-align:center';
-      document.body.appendChild(badge);
-    }
-    clearTimeout(hideT); badge.textContent = txt; badge.style.background = color; badge.style.display = 'block';
-  }
-  function net() {
-    if (!navigator.onLine) {
-      showBadge(hindi() ? 'ऑफ़लाइन · डेटा इस फ़ोन में सुरक्षित है' : 'Offline · your data is saved on this phone', '#ff9500');
-    } else if (badge && badge.style.display !== 'none') {
-      showBadge(hindi() ? 'इंटरनेट वापस आया' : 'Back online', '#34c759');
-      hideT = setTimeout(function () { badge.style.display = 'none'; }, 2500);
-    }
-  }
   function kick() {
     ['syncNow', 'syncAll', 'pull', 'rqPoll', 'rqSync', 'rqFlush'].forEach(function (n) { try { if (typeof window[n] === 'function') window[n](); } catch (e) {} });
   }
-  addEventListener('online', function () { net(); setTimeout(kick, 800); });
-  addEventListener('offline', net);
-  addEventListener('load', function () { net(); setTimeout(register, 2500); setTimeout(warm, 6000); });
+  addEventListener('online', function () { setTimeout(kick, 800); });
+  addEventListener('load', function () { setTimeout(register, 2500); setTimeout(warm, 6000); });
 
   function ping(reg) {
     return new Promise(function (resolve) {
