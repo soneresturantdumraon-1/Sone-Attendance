@@ -152,7 +152,7 @@ const I={en:{
 title:'Staff App',setupSub:'See your own attendance, salary and balance',url:'Project URL',key:'Public key',code:'Access code',connect:'Connect',fill:'Enter the URL, key and code.',
 anonOff:'Anonymous sign-in is off. In Supabase open Authentication > Sign In / Providers and turn on "Allow anonymous sign-ins".',wrongCode:'This code is not for the Staff app.',askOwner:'Ask the owner for your link: Staff page > Staff App Access.',
 today:'Today',present:'Present',half:'Half Day',leave:'Leave',absent:'Absent',notMarked:'Not marked yet',days:'Days',
-salary:'Monthly Salary',bonus:'No-leave bonus',prorated:'Pro-rated from {d}',ded:'Deduction ({n} absent days)',prev:'Previous pending',prevAdv:'Previous advance',withdrawn:'Received this month',
+salary:'Monthly Salary',proUpto:'Pro-rated up to {d}',lateDed:'Late deduction ({n} late days)',bonus:'No-leave bonus',prorated:'Pro-rated from {d}',ded:'Deduction ({n} absent days)',prev:'Previous pending',prevAdv:'Previous advance',withdrawn:'Received this month',
 remaining:'Remaining',overdrawn:'Overdrawn (advance)',dueOn:'Salary due on',held:'Salary not payable yet. Due on {d}.',onTrack:'On track for a {a} bonus',
 attendance:'Attendance',lPresent:'Present',lHalf:'Half',lLeave:'Leave',lAbsent:'Absent',money:'Money received',noTx:'No money received this month',cash:'Cash',online:'Online',wd:'Received',paid:'Salary received',
 outs:'Out / In',noOut:'No outings this month',outNow:'Out now',since:'since {t}',updated:'Updated {t}',offline:'Offline, showing saved data',refresh:'Refresh',
@@ -161,7 +161,7 @@ hi:{
 title:'स्टाफ ऐप',setupSub:'अपनी हाज़िरी, वेतन और हिसाब देखें',url:'प्रोजेक्ट URL',key:'पब्लिक की',code:'एक्सेस कोड',connect:'कनेक्ट करें',fill:'URL, की और कोड भरें।',
 anonOff:'Anonymous sign-in बंद है। Supabase में Authentication > Sign In / Providers में "Allow anonymous sign-ins" चालू करें।',wrongCode:'यह कोड स्टाफ ऐप का नहीं है।',askOwner:'मालिक से अपना लिंक मांगें: स्टाफ पेज > Staff App Access।',
 today:'आज',present:'उपस्थित',half:'आधा दिन',leave:'छुट्टी',absent:'अनुपस्थित',notMarked:'अभी दर्ज नहीं',days:'दिन',
-salary:'मासिक वेतन',bonus:'बिना छुट्टी बोनस',prorated:'{d} से अनुपातिक',ded:'कटौती ({n} दिन अनुपस्थित)',prev:'पिछला बकाया',prevAdv:'पिछला अग्रिम',withdrawn:'इस माह मिला',
+salary:'मासिक वेतन',proUpto:'{d} तक अनुपातिक',lateDed:'देर की कटौती ({n} दिन)',bonus:'बिना छुट्टी बोनस',prorated:'{d} से अनुपातिक',ded:'कटौती ({n} दिन अनुपस्थित)',prev:'पिछला बकाया',prevAdv:'पिछला अग्रिम',withdrawn:'इस माह मिला',
 remaining:'शेष',overdrawn:'अधिक लिया (अग्रिम)',dueOn:'वेतन देय',held:'वेतन अभी देय नहीं। देय तिथि {d}।',onTrack:'{a} बोनस की राह पर',
 attendance:'हाज़िरी',lPresent:'उपस्थित',lHalf:'आधा',lLeave:'छुट्टी',lAbsent:'अनुपस्थित',money:'मिला हुआ पैसा',noTx:'इस माह कोई पैसा नहीं मिला',cash:'नकद',online:'ऑनलाइन',wd:'मिला',paid:'वेतन मिला',
 outs:'बाहर / वापस',noOut:'इस माह कोई बाहर जाना नहीं',outNow:'अभी बाहर',since:'{t} से',updated:'अपडेट {t}',offline:'ऑफलाइन, सेव किया डेटा दिख रहा है',refresh:'रिफ्रेश',
@@ -188,8 +188,9 @@ const idDate=id=>{const n=parseInt(String(id).slice(0,8),36);return n>1e12&&n<4e
 const trackStart=s=>{const j=(s.joined||'').slice(0,7),a=(s.added||idDate(s.id)||s.joined||today()).slice(0,7);return j>a?j:a};
 const sumP=(arr,k)=>arr.filter(p=>p.kind===k).reduce((x,p)=>x+p.amt,0);
 const addMonth1=d=>{const p=parse(d);return dstr(new Date(p.y,p.m,p.d))};
-const dueDate=s=>addMonth1(s.joined||today());
-const isHeld=s=>!!s.hold&&today()<dueDate(s);
+const RATE_DAYS=30; /* daily rate always = salary / 30, same as owner app */
+const dueDate=(s,m)=>shiftM(m||today().slice(0,7),1)+'-01';
+const isHeld=(s,m)=>!!s.hold&&today()<dueDate(s,m);
 const durMin=(a,b)=>{if(!a||!b)return 0;const f=x=>{const [h,m]=x.split(':').map(Number);return h*60+m};let d=f(b)-f(a);if(d<0)d+=1440;return d};
 const fmtDur=n=>{const a=Math.floor(n/60),b=n%60;return (a?a+t('hrS')+' ':'')+b+t('minS')};
 const COLORS=['#007aff','#34c759','#ff9500','#af52de','#ff2d55','#5ac8fa','#5856d6','#ff6b35'];
@@ -225,18 +226,19 @@ function monthNet(s,m){
   const present=at.reduce((x,a)=>x+(a.type==='P'?1:a.type==='H'?.5:0),0),leave=at.filter(a=>a.type==='L').length;
   const pays=D.pay.filter(p=>(p.fm||p.date.slice(0,7))===m);
   const taken=sumP(pays,'take'),settled=sumP(pays,'settle');
-  const lm=s.left?s.left.slice(0,7):'',after=!!lm&&m>lm,leaving=lm===m,ld=leaving?parse(s.left).d:dim;
+  const lm=s.left?s.left.slice(0,7):'',after=!!lm&&m>lm,leaving=lm===m,leftFull=leaving&&s.left>=last,ld=leaving?parse(s.left).d:dim;
   let ded=0,absent=0;
-  if(s.cut&&!after){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const n=dayList(st,en).length-(en===today()&&pendingDay(s,en,D.att.some(a=>a.date===en))?1:0);absent=Math.max(0,n-present-leave);ded=Math.floor(absent*Math.floor(s.salary/dim))}}
-  const held=isHeld(s),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=(jm===m&&jd>1)||leaving;
-  const fd=s.fullDays==null?34:s.fullDays,dRate=Math.floor(s.salary/dim);
+  if(s.cut&&!after){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const n=dayList(st,en).length-(en===today()&&pendingDay(s,en,D.att.some(a=>a.date===en))?1:0);absent=Math.max(0,n-present-leave);ded=Math.floor(absent*Math.floor(s.salary/RATE_DAYS))}}
+  const held=isHeld(s,m),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=(jm===m&&jd>1)||(leaving&&!leftFull);
+  const fd=s.fullDays==null?34:s.fullDays,dRate=Math.floor(s.salary/RATE_DAYS);
   const isP=d=>at.some(a=>a.date===d&&a.type==='P');
-  const wholeMonth=fd>dim&&!prorated&&jm<=m&&(!lm||m<lm);
+  const wholeMonth=fd>dim&&!prorated&&jm<=m&&(!lm||m<lm||leftFull);
   const perfect=wholeMonth&&today()>last&&dayList(first,last).every(isP);
   const soFarEnd=today()<last?today():last,onTrack=wholeMonth&&today()<=last&&soFarEnd>=first&&dayList(first,soFarEnd).every(isP);
-  const base=after?0:perfect?fd*dRate:(prorated?dRate*Math.max(0,ld-jd+1):s.salary),bonus=perfect?base-s.salary:0,potential=fd>dim&&!lm?fd*dRate-s.salary:0;
-  const net=held||after?0:base-ded,bal=net-taken-settled;
-  return{after,at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,base,prorated,leave,perfect,bonus,onTrack,potential,jd};
+  const base=after?0:perfect?fd*dRate:(prorated?Math.min(s.salary,dRate*Math.max(0,ld-jd+1)):s.salary),bonus=perfect?base-s.salary:0,potential=fd>dim&&!lm?fd*dRate-s.salary:0;
+  const lateN=at.filter(a=>lateBy(s,a)>0).length,lateDed=(s.lateReal&&s.lateCut>0&&!after)?lateN*Math.floor(s.lateCut):0;
+  const net=held||after?0:base-ded-lateDed,bal=net-taken-settled;
+  return{after,at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,due:dueDate(s,m),base,prorated,leaving,leave,perfect,bonus,onTrack,potential,jd,lateN,lateDed};
 }
 function calcM(s,m){
   const c=monthNet(s,m),start=trackStart(s);
@@ -427,7 +429,8 @@ function mainHtml(){
   const rows=[];
   rows.push(`<div class="irow"><span>${t('salary')}</span><b>${rs(s.salary)}</b></div>`);
   if(c.perfect)rows.push(`<div class="irow"><span>${t('bonus')}</span><b class="g">+ ${rs(c.bonus)}</b></div>`);
-  if(c.prorated)rows.push(`<div class="irow"><span>${t('prorated',{d:fmtD(s.joined)})}</span><b>${rs(c.base)}</b></div>`);
+  if(c.prorated)rows.push(`<div class="irow"><span>${c.leaving?t('proUpto',{d:fmtD(s.left)}):t('prorated',{d:fmtD(s.joined)})}</span><b>${rs(c.base)}</b></div>`);
+  if(c.lateDed&&!c.held)rows.push(`<div class="irow"><span>${t('lateDed',{n:c.lateN})}</span><b class="r">− ${rs(c.lateDed)}</b></div>`);
   if(s.cut&&!c.held&&c.ded)rows.push(`<div class="irow"><span>${t('ded',{n:c.absent})}</span><b class="r">− ${rs(c.ded)}</b></div>`);
   if(c.prev0)rows.push(`<div class="irow"><span>${c.prev0>0?t('prev'):t('prevAdv')}</span><b class="${c.prev0>0?'':'r'}">${rs(Math.abs(c.prev0))}</b></div>`);
   rows.push(`<div class="irow"><span>${t('withdrawn')}</span><b>${rs(c.taken+c.settled)}</b></div>`);
@@ -437,7 +440,7 @@ function mainHtml(){
   ${rqCards()}
   <div class="mbar"><button onclick="shift(-1)">‹</button><span>${mlabel(month)}</span><button onclick="shift(1)" ${month>=T.slice(0,7)?'disabled':''}>›</button></div>
   <div class="tiles"><div><b class="g">${c.present}</b><span>${t('present')}</span></div><div><b style="color:var(--blue)">${c.leave}</b><span>${t('leave')}</span></div><div><b class="r">${absDays}</b><span>${t('absent')}</span></div></div>
-  <div class="card"><div class="big">${c.held?`<span class="sub">${t('dueOn')}</span><b>${fmtD(addMonth1(s.joined||T))}</b>`:`<span class="sub">${over?t('overdrawn'):t('remaining')}</span><b class="${over?'r':'g'}">${rs(Math.abs(c.bal))}</b>`}</div>${rows.join('')}${c.held?`<div class="banner">${t('held',{d:fmtD(dueDate(s))})}</div>`:''}${c.onTrack&&c.potential>0?`<div class="banner g">✓ ${t('onTrack',{a:rs(c.potential)})}</div>`:''}</div>
+  <div class="card"><div class="big">${c.held?`<span class="sub">${t('dueOn')}</span><b>${fmtD(c.due)}</b>`:`<span class="sub">${over?t('overdrawn'):t('remaining')}</span><b class="${over?'r':'g'}">${rs(Math.abs(c.bal))}</b>`}</div>${rows.join('')}${c.held?`<div class="banner">${t('held',{d:fmtD(c.due)})}</div>`:''}${c.onTrack&&c.potential>0?`<div class="banner g">✓ ${t('onTrack',{a:rs(c.potential)})}</div>`:''}</div>
   <div class="card"><div class="sec">${t('duesAdv')}</div><div class="tiles" style="margin:0 0 8px"><div style="background:var(--fill)"><b class="g">${rs(c.bal>0?c.bal:0)}</b><span>${t('duesL')}</span></div><div style="background:var(--fill)"><b class="${c.bal<0?'r':''}">${rs(c.bal<0?-c.bal:0)}</b><span>${t('advL')}</span></div></div><div class="irow"><span>${t('advMonth')}</span><b>${rs(c.taken)}</b></div><div class="irow"><span>${t('advTotal')}</span><b>${rs(sumP(D.pay,'take'))}</b></div><div class="sub" style="margin-top:6px">${t('duesNote',{m:mlabel(month)})}</div></div>
   <div class="card"><div class="sec">${t('attendance')}</div><div class="cal">${cal}</div><div class="leg"><span><b style="background:var(--green)"></b>${t('lPresent')}</span><span><b style="background:var(--orange)"></b>${t('lHalf')}</span><span><b style="background:var(--blue)"></b>${t('lLeave')}</span><span><b style="background:var(--red);opacity:.4"></b>${t('lAbsent')}</span></div></div>
   <div class="card"><div class="sec">${t('money')}</div>${pays.length?pays.map(p=>`<div class="irow"><span>${fmtD(p.date)} · ${p.kind==='take'?t('wd'):t('paid')}${p.mode?' · '+t(p.mode):''}${p.note?' · '+esc(p.note):''}</span><b class="g">+${rs(p.amt)}</b></div>`).join(''):`<div class="sub">${t('noTx')}</div>`}</div>

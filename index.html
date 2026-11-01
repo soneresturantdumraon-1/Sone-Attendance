@@ -458,13 +458,13 @@ function monthNet(s,m){
   const present=at.reduce((x,a)=>x+(a.type==='P'?1:a.type==='H'?.5:0),0),leave=at.filter(a=>a.type==='L').length;
   const pays=db.pay.filter(p=>p.sid===s.id&&(p.fm||p.date.slice(0,7))===m);
   const taken=sumP(pays,'take'),settled=sumP(pays,'settle');
-  const lm=s.left?s.left.slice(0,7):'',after=!!lm&&m>lm,leaving=lm===m,ld=leaving?parse(s.left).d:dim;
+  const lm=s.left?s.left.slice(0,7):'',after=!!lm&&m>lm,leaving=lm===m,leftFull=leaving&&s.left>=last,ld=leaving?parse(s.left).d:dim;
   let ded=0,absent=0;
   if(s.cut&&!after){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const n=dayList(st,en).length-(en===today()&&pendingDay(s,en)?1:0);absent=Math.max(0,n-present-leave);ded=Math.floor(absent*Math.floor(s.salary/RATE_DAYS))}}
-  const held=isHeld(s,m),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=(jm===m&&jd>1)||leaving;
+  const held=isHeld(s,m),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=(jm===m&&jd>1)||(leaving&&!leftFull);
   const fd=s.fullDays==null?34:s.fullDays,dRate=Math.floor(s.salary/RATE_DAYS);
   const isP=d=>at.some(a=>a.date===d&&a.type==='P');
-  const wholeMonth=fd>dim&&!prorated&&jm<=m&&(!lm||m<lm);
+  const wholeMonth=fd>dim&&!prorated&&jm<=m&&(!lm||m<lm||leftFull);
   const perfect=wholeMonth&&today()>last&&dayList(first,last).every(isP);
   const soFarEnd=today()<last?today():last,onTrack=wholeMonth&&today()<=last&&soFarEnd>=first&&dayList(first,soFarEnd).every(isP);
   const base=after?0:perfect?fd*dRate:(prorated?Math.min(s.salary,dRate*Math.max(0,ld-jd+1)):s.salary),bonus=perfect?base-s.salary:0,potential=fd>dim&&!lm?fd*dRate-s.salary:0;
