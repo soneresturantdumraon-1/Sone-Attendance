@@ -152,7 +152,7 @@ const I={en:{
 title:'Staff App',setupSub:'See your own attendance, salary and balance',url:'Project URL',key:'Public key',code:'Access code',connect:'Connect',fill:'Enter the URL, key and code.',
 anonOff:'Anonymous sign-in is off. In Supabase open Authentication > Sign In / Providers and turn on "Allow anonymous sign-ins".',wrongCode:'This code is not for the Staff app.',askOwner:'Ask the owner for your link: Staff page > Staff App Access.',
 today:'Today',present:'Present',half:'Half Day',leave:'Leave',absent:'Absent',notMarked:'Not marked yet',days:'Days',
-salary:'Monthly Salary',proUpto:'Pro-rated up to {d}',lateDed:'Late deduction ({n} late days)',bonus:'No-leave bonus',prorated:'Pro-rated from {d}',ded:'Deduction ({n} absent days)',prev:'Previous pending',prevAdv:'Previous advance',withdrawn:'Received this month',
+salary:'Monthly Salary',proUpto:'Pro-rated up to {d}',byDaysRow:'Paid for {n} days',lateDed:'Late deduction ({n} late days)',bonus:'No-leave bonus',prorated:'Pro-rated from {d}',ded:'Deduction ({n} absent days)',prev:'Previous pending',prevAdv:'Previous advance',withdrawn:'Received this month',
 remaining:'Remaining',overdrawn:'Overdrawn (advance)',dueOn:'Salary due on',held:'Salary not payable yet. Due on {d}.',onTrack:'On track for a {a} bonus',
 attendance:'Attendance',lPresent:'Present',lHalf:'Half',lLeave:'Leave',lAbsent:'Absent',money:'Money received',noTx:'No money received this month',cash:'Cash',online:'Online',wd:'Received',paid:'Salary received',
 outs:'Out / In',noOut:'No outings this month',outNow:'Out now',since:'since {t}',updated:'Updated {t}',offline:'Offline, showing saved data',refresh:'Refresh',
@@ -161,7 +161,7 @@ hi:{
 title:'स्टाफ ऐप',setupSub:'अपनी हाज़िरी, वेतन और हिसाब देखें',url:'प्रोजेक्ट URL',key:'पब्लिक की',code:'एक्सेस कोड',connect:'कनेक्ट करें',fill:'URL, की और कोड भरें।',
 anonOff:'Anonymous sign-in बंद है। Supabase में Authentication > Sign In / Providers में "Allow anonymous sign-ins" चालू करें।',wrongCode:'यह कोड स्टाफ ऐप का नहीं है।',askOwner:'मालिक से अपना लिंक मांगें: स्टाफ पेज > Staff App Access।',
 today:'आज',present:'उपस्थित',half:'आधा दिन',leave:'छुट्टी',absent:'अनुपस्थित',notMarked:'अभी दर्ज नहीं',days:'दिन',
-salary:'मासिक वेतन',proUpto:'{d} तक अनुपातिक',lateDed:'देर की कटौती ({n} दिन)',bonus:'बिना छुट्टी बोनस',prorated:'{d} से अनुपातिक',ded:'कटौती ({n} दिन अनुपस्थित)',prev:'पिछला बकाया',prevAdv:'पिछला अग्रिम',withdrawn:'इस माह मिला',
+salary:'मासिक वेतन',proUpto:'{d} तक अनुपातिक',byDaysRow:'{n} दिन का वेतन',lateDed:'देर की कटौती ({n} दिन)',bonus:'बिना छुट्टी बोनस',prorated:'{d} से अनुपातिक',ded:'कटौती ({n} दिन अनुपस्थित)',prev:'पिछला बकाया',prevAdv:'पिछला अग्रिम',withdrawn:'इस माह मिला',
 remaining:'शेष',overdrawn:'अधिक लिया (अग्रिम)',dueOn:'वेतन देय',held:'वेतन अभी देय नहीं। देय तिथि {d}।',onTrack:'{a} बोनस की राह पर',
 attendance:'हाज़िरी',lPresent:'उपस्थित',lHalf:'आधा',lLeave:'छुट्टी',lAbsent:'अनुपस्थित',money:'मिला हुआ पैसा',noTx:'इस माह कोई पैसा नहीं मिला',cash:'नकद',online:'ऑनलाइन',wd:'मिला',paid:'वेतन मिला',
 outs:'बाहर / वापस',noOut:'इस माह कोई बाहर जाना नहीं',outNow:'अभी बाहर',since:'{t} से',updated:'अपडेट {t}',offline:'ऑफलाइन, सेव किया डेटा दिख रहा है',refresh:'रिफ्रेश',
@@ -227,18 +227,20 @@ function monthNet(s,m){
   const pays=D.pay.filter(p=>(p.fm||p.date.slice(0,7))===m);
   const taken=sumP(pays,'take'),settled=sumP(pays,'settle');
   const lm=s.left?s.left.slice(0,7):'',after=!!lm&&m>lm,leaving=lm===m,leftFull=leaving&&s.left>=last,ld=leaving?parse(s.left).d:dim;
+  const sf=Math.max(0,parseInt(s.sunFree)||0);let freeSun=0;
+  if(sf>0&&!after){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const rec=new Set(at.filter(a=>a.type==='P'||a.type==='H'||a.type==='L').map(a=>a.date));freeSun=Math.min(sf,dayList(st,en).filter(d=>!rec.has(d)&&!(d===today()&&pendingDay(s,d,at.some(a=>a.date===d)))&&(p=>new Date(p.y,p.m-1,p.d).getDay()===0)(parse(d))).length)}}
   let ded=0,absent=0;
-  if(s.cut&&!after){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const n=dayList(st,en).length-(en===today()&&pendingDay(s,en,D.att.some(a=>a.date===en))?1:0);absent=Math.max(0,n-present-leave);ded=Math.floor(absent*Math.floor(s.salary/RATE_DAYS))}}
-  const held=isHeld(s,m),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=(jm===m&&jd>1)||(leaving&&!leftFull);
+  if(s.cut&&!after&&!s.byDays){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const n=dayList(st,en).length-(en===today()&&pendingDay(s,en,D.att.some(a=>a.date===en))?1:0);absent=Math.max(0,n-present-leave-freeSun);ded=Math.floor(absent*Math.floor(s.salary/RATE_DAYS))}}
+  const held=isHeld(s,m),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=!s.byDays&&((jm===m&&jd>1)||(leaving&&!leftFull));
   const fd=s.fullDays==null?34:s.fullDays,dRate=Math.floor(s.salary/RATE_DAYS);
   const isP=d=>at.some(a=>a.date===d&&a.type==='P');
-  const wholeMonth=fd>dim&&!prorated&&jm<=m&&(!lm||m<lm||leftFull);
+  const wholeMonth=!s.byDays&&fd>dim&&!prorated&&jm<=m&&(!lm||m<lm||leftFull);
   const perfect=wholeMonth&&today()>last&&dayList(first,last).every(isP);
   const soFarEnd=today()<last?today():last,onTrack=wholeMonth&&today()<=last&&soFarEnd>=first&&dayList(first,soFarEnd).every(isP);
-  const base=after?0:perfect?fd*dRate:(prorated?Math.min(s.salary,dRate*Math.max(0,ld-jd+1)):s.salary),bonus=perfect?base-s.salary:0,potential=fd>dim&&!lm?fd*dRate-s.salary:0;
+  const base=after?0:s.byDays?dRate*(present+leave+freeSun):perfect?fd*dRate:(prorated?Math.min(s.salary,dRate*Math.max(0,ld-jd+1)):s.salary),bonus=perfect?base-s.salary:0,potential=!s.byDays&&fd>dim&&!lm?fd*dRate-s.salary:0;
   const lateN=at.filter(a=>lateBy(s,a)>0).length,lateDed=(s.lateReal&&s.lateCut>0&&!after)?lateN*Math.floor(s.lateCut):0;
   const net=held||after?0:base-ded-lateDed,bal=net-taken-settled;
-  return{after,at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,due:dueDate(s,m),base,prorated,leaving,leave,perfect,bonus,onTrack,potential,jd,lateN,lateDed};
+  return{after,at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,due:dueDate(s,m),base,prorated,leaving,byDays:!!s.byDays,freeSun,paidDays:present+leave+freeSun,leave,perfect,bonus,onTrack,potential,jd,lateN,lateDed};
 }
 function calcM(s,m){
   const c=monthNet(s,m),start=trackStart(s);
@@ -428,6 +430,7 @@ function mainHtml(){
   const outs=D.out.filter(o=>(o.date||'').startsWith(month)).sort((a,b)=>(a.date+(a.out||''))<(b.date+(b.out||''))?1:-1);
   const rows=[];
   rows.push(`<div class="irow"><span>${t('salary')}</span><b>${rs(s.salary)}</b></div>`);
+  if(c.byDays&&!c.after)rows.push(`<div class="irow"><span>${t('byDaysRow',{n:c.paidDays})}</span><b>${rs(c.base)}</b></div>`);
   if(c.perfect)rows.push(`<div class="irow"><span>${t('bonus')}</span><b class="g">+ ${rs(c.bonus)}</b></div>`);
   if(c.prorated)rows.push(`<div class="irow"><span>${c.leaving?t('proUpto',{d:fmtD(s.left)}):t('prorated',{d:fmtD(s.joined)})}</span><b>${rs(c.base)}</b></div>`);
   if(c.lateDed&&!c.held)rows.push(`<div class="irow"><span>${t('lateDed',{n:c.lateN})}</span><b class="r">− ${rs(c.lateDed)}</b></div>`);
