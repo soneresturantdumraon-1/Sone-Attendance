@@ -220,7 +220,7 @@ function workedMin(s,a,d){
   D.out.filter(o=>o.date===d).forEach(o=>{const x=Math.max(hmin(o.out),b),y=o.in?Math.min(hmin(o.in),e):e;if(y>x)m-=y-x});
   return m;
 }
-function monthNet(s,m){
+function monthCalc(s,m){
   const dim=daysIn(m),first=m+'-01',last=m+'-'+pad(dim);
   const at=D.att.filter(a=>a.date.startsWith(m));
   const present=at.reduce((x,a)=>x+(a.type==='P'?1:a.type==='H'?.5:0),0),leave=at.filter(a=>a.type==='L').length;
@@ -232,15 +232,28 @@ function monthNet(s,m){
   let ded=0,absent=0;
   if(s.cut&&!after&&!s.byDays){const st=s.joined>first?s.joined:first,tl=today()<last?today():last,en=leaving&&s.left<tl?s.left:tl;if(en>=st){const n=dayList(st,en).length-(en===today()&&pendingDay(s,en,D.att.some(a=>a.date===en))?1:0);absent=Math.max(0,n-present-leave-freeSun);ded=Math.floor(absent*Math.floor(s.salary/RATE_DAYS))}}
   const held=isHeld(s,m),jm=(s.joined||'').slice(0,7),jd=jm===m?parse(s.joined).d:1,prorated=!s.byDays&&((jm===m&&jd>1)||(leaving&&!leftFull));
-  const fd=s.fullDays==null?34:s.fullDays,dRate=Math.floor(s.salary/RATE_DAYS);
-  const isP=d=>at.some(a=>a.date===d&&a.type==='P');
+  const fd0=s.fullDays==null?34:s.fullDays,fd=fd0>0?fd0+Math.max(0,dim-30):0,dRate=Math.floor(s.salary/RATE_DAYS);
+  const dayType=d=>{const a=at.find(x=>x.date===d);return a?a.type:'A'};
   const wholeMonth=!s.byDays&&fd>dim&&!prorated&&jm<=m&&(!lm||m<lm||leftFull);
-  const perfect=wholeMonth&&today()>last&&dayList(first,last).every(isP);
-  const soFarEnd=today()<last?today():last,onTrack=wholeMonth&&today()<=last&&soFarEnd>=first&&dayList(first,soFarEnd).every(isP);
-  const base=after?0:s.byDays?dRate*(present+leave+freeSun):perfect?fd*dRate:(prorated?Math.min(s.salary,dRate*Math.max(0,ld-jd+1)):s.salary),bonus=perfect?base-s.salary:0,potential=!s.byDays&&fd>dim&&!lm?fd*dRate-s.salary:0;
+  const missOf=(x,y)=>{let n=0;dayList(x,y).forEach(d=>{if(d===today()&&pendingDay(s,d,at.some(a=>a.date===d)))return;const ty=dayType(d);n+=ty==='P'?0:ty==='H'?.5:1});return n};
+  const ended=today()>last,soFarEnd=ended?last:today();
+  const missed=wholeMonth&&ended?missOf(first,last):0,bonusDays=fd-missed;
+  const perfect=wholeMonth&&ended&&missed<4&&bonusDays>RATE_DAYS;
+  const missSoFar=wholeMonth&&!ended&&soFarEnd>=first?missOf(first,soFarEnd):0;
+  const onTrack=wholeMonth&&!ended&&soFarEnd>=first&&missSoFar<4&&fd-missSoFar>RATE_DAYS;
+  if(perfect)ded=0;
+  const base=after?0:s.byDays?dRate*(present+leave+freeSun):perfect?Math.max(s.salary,Math.floor(bonusDays*dRate)):(prorated?Math.min(s.salary,dRate*Math.max(0,ld-jd+1)):s.salary),bonus=perfect?base-s.salary:0,potential=onTrack?Math.max(0,Math.floor((fd-missSoFar)*dRate)-s.salary):0;
   const lateN=at.filter(a=>lateBy(s,a)>0).length,lateDed=(s.lateReal&&s.lateCut>0&&!after)?lateN*Math.floor(s.lateCut):0;
   const net=held||after?0:base-ded-lateDed,bal=net-taken-settled;
-  return{after,at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,due:dueDate(s,m),base,prorated,leaving,byDays:!!s.byDays,freeSun,paidDays:present+leave+freeSun,leave,perfect,bonus,onTrack,potential,jd,lateN,lateDed};
+  return{after,at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,due:dueDate(s,m),base,prorated,leaving,byDays:!!s.byDays,freeSun,paidDays:present+leave+freeSun,leave,perfect,bonus,onTrack,potential,missed,jd,lateN,lateDed};
+}
+const FZK=['net','ded','absent','base','bonus','perfect','prorated','lateN','lateDed','freeSun','paidDays','after','missed'];
+function monthNet(s,m){
+  const c=monthCalc(s,m),f=s.fz&&s.fz[m];
+  if(!f||m>=today().slice(0,7))return c;
+  const o={};FZK.forEach(k=>{if(f[k]!==undefined)o[k]=f[k]});
+  o.held=false;o.onTrack=false;o.potential=0;o.daily=Math.floor((f.sal||s.salary)/RATE_DAYS);o.bal=o.net-c.taken-c.settled;
+  return Object.assign({},c,o);
 }
 function calcM(s,m){
   const c=monthNet(s,m),start=trackStart(s);
