@@ -244,20 +244,21 @@ function monthCalc(s,m){
   if(perfect)ded=0;
   const base=after?0:s.byDays?dRate*(present+leave+freeSun):perfect?Math.max(s.salary,Math.floor(bonusDays*dRate)):(prorated?Math.min(s.salary,dRate*Math.max(0,ld-jd+1)):s.salary),bonus=perfect?base-s.salary:0,potential=onTrack?Math.max(0,Math.floor((fd-missSoFar)*dRate)-s.salary):0;
   const lateN=at.filter(a=>lateBy(s,a)>0).length,lateDed=(s.lateReal&&s.lateCut>0&&!after)?lateN*Math.floor(s.lateCut):0;
-  const net=held||after?0:base-ded-lateDed,bal=net-taken-settled;
+  const net=held||after?0:Math.max(0,base-ded-lateDed),bal=net-taken-settled;
   return{after,at,pays,present,taken,settled,ded:held?0:ded,absent,net,bal,dim,held,due:dueDate(s,m),base,prorated,leaving,byDays:!!s.byDays,freeSun,paidDays:present+leave+freeSun,leave,perfect,bonus,onTrack,potential,missed,jd,lateN,lateDed};
 }
 const FZK=['net','ded','absent','base','bonus','perfect','prorated','lateN','lateDed','freeSun','paidDays','after','missed'];
+const salFor=(s,m)=>{let v=s.salary;(s.sh||[]).forEach(x=>{if(x.from<=m)v=x.sal});return v};
 function monthNet(s,m){
-  const c=monthCalc(s,m),f=s.fz&&s.fz[m];
+  const sv=salFor(s,m),c=monthCalc(sv===s.salary?s:Object.assign({},s,{salary:sv}),m),f=s.fz&&s.fz[m];
   if(!f||m>=today().slice(0,7))return c;
   const o={};FZK.forEach(k=>{if(f[k]!==undefined)o[k]=f[k]});
-  o.held=false;o.onTrack=false;o.potential=0;o.daily=Math.floor((f.sal||s.salary)/RATE_DAYS);o.bal=o.net-c.taken-c.settled;
+  if(o.net<0)o.net=0;o.held=false;o.onTrack=false;o.potential=0;o.daily=Math.floor((f.sal||s.salary)/RATE_DAYS);o.bal=o.net-c.taken-c.settled;
   return Object.assign({},c,o);
 }
 function calcM(s,m){
   const c=monthNet(s,m),start=trackStart(s);
-  const pre=D.pay.filter(p=>(p.fm||p.date.slice(0,7))<start).reduce((x,p)=>x+p.amt,0),op0=(s.opening||0)-pre;
+  const pre=D.pay.filter(p=>(p.fm||p.date.slice(0,7))<start).reduce((x,p)=>x+p.amt,0),op0=(s.opening||0)-(s.advPre||0)-pre;
   if(m<start)return Object.assign({},c,{net:0,taken:0,settled:0,ded:0,bf:0,late:0,prev0:0,bal:op0});
   let bf=0;
   if(m>start){bf=op0;let k=start;while(k<m){const x=monthNet(s,k);bf+=x.net-x.taken-x.settled;k=shiftM(k,1)}}
@@ -570,7 +571,7 @@ function rqPickMsg(){rqImg(d=>rqMsgPost('',d))}
 document.documentElement.lang=lang;
 D=cleanD(D);
 render();pull();
-setInterval(()=>{if(!document.hidden)pull()},30000);
+setInterval(()=>{if(!document.hidden)pull()},8000);
 rqSync();let rqTick=0;setInterval(()=>{if(document.hidden)return;rqTick++;if(rqOv||rqTick%3===0)rqSync()},7000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){quiet=true;pull()}});
 </script>
